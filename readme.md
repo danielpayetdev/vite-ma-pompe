@@ -1,13 +1,17 @@
+# Hono with Bun runtime
+
 ## Getting Started
 
 ### Cloning the repo
 
 ```sh
-bun create blank ./NAME_HERE
+bun create hono ./NAME_HERE
 ```
 
-### Execute a file (eg. src/index.js)
-    
-```sh
-bun run ./src/index.js
+### Development
 ```
+bun run start
+```
+
+Open http://localhost:3000 with your browser to see the result.
+
