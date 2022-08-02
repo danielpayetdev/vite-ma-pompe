@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "types": ["bun-types"],
+    "lib": ["ESNext"],
     "module": "esnext",
-    "moduleResolution": "Node"
+    "target": "esnext",
+    // "bun-types" is the important part
+    "types": ["bun-types"]
   }
 }
