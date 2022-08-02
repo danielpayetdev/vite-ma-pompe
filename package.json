@@ -1,0 +1,7 @@
+{
+  "version": "1.0.4",
+  "name": "prix-carburant",
+  "dependencies": {
+    "@kapsonfire/bun-bakery": "^0.2.0"
+  }
+}
