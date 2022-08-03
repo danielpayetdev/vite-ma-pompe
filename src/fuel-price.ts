@@ -1,15 +1,9 @@
-import { Database } from "bun:sqlite";
-import { TypeCarburant } from "./type/type-carburant";
+import { getStationForID } from "./database.ts";
+import { TypeCarburant } from "./type/type-carburant.ts";
 
 export class FuelPrice {
-  public getStation(id: string, typeCarburant: TypeCarburant) {
-    try {
-      const db = new Database("fuel-price.db", { readonly: true });
-      const query = db.query("SELECT * FROM station WHERE id = ?");
-      return query.get(id);
-    } catch (error) { 
-      throw new Error("Error while getting station");
-    }
+  public getStation(id: string, _typeCarburant: TypeCarburant) {
+    return getStationForID(id);
   }
 }
 
