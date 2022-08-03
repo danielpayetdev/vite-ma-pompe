@@ -1,0 +1,10 @@
+{
+	"name": "Bun",
+ 	"build": {
+		"dockerfile": "Dockerfile",
+		"args": {
+			"VARIANT": "bullseye"
+		}
+	},
+	"remoteUser": "vscode"
+}
