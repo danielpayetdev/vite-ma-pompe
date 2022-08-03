@@ -5,7 +5,9 @@
     "bun-types": "latest"
   },
   "dependencies": {
-    "hono": "^2.0.0"
+    "hono": "^2.0.0",
+    "jszip": "^3.10.0",
+    "unzipper": "^0.10.11"
   },
   "scripts": {
     "start": "bun run src/index.ts"
