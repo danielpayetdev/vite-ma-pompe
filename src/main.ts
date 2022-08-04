@@ -1,5 +1,4 @@
-import { serve } from "https://deno.land/std@0.150.0/http/server.ts"
-import { Context, Hono } from "https://deno.land/x/hono@v2.0.6/mod.ts"
+import { Context, Hono, serve } from "./deps.ts";
 import { DownloadData } from "./download-data.ts";
 import { FuelPrice } from './fuel-price.ts'
 import { TypeCarburant } from './type/type-carburant.ts'

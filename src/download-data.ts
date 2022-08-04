@@ -1,10 +1,7 @@
-import { join } from "https://deno.land/std@0.73.0/path/mod.ts";
-import { CHAR_PERCENT } from "https://deno.land/std@0.73.0/path/_constants.ts";
-import os from "https://deno.land/x/dos@v0.1.0/mod.ts";
-// import { unZipFromURL } from "https://deno.land/x/zip@v1.1.0/mod.ts";
-import { parse } from "https://deno.land/x/xml@2.0.4/mod.ts";
-import { document, node } from "https://deno.land/x/xml@2.0.4/utils/types.ts";
+import { document, join, node, os } from "./deps.ts";
 import { Station } from "./type/station.ts";
+import { StationXML } from "./type/xml/station.ts";
+import { XmlMapper } from "./utils/xml-mapper.ts";
 
 export class DownloadData {
   private static readonly URL = "https://donnees.roulez-eco.fr/opendata/instantane";
@@ -24,7 +21,7 @@ export class DownloadData {
       //   progress: (bytes) => Deno.stdout.writeSync(new TextEncoder().encode(`Parsing document: ${((100 * bytes) / prix.length).toFixed(2)}%\r`)),
       // });
       console.log();
-      this.saveToDB(((xml["pdv_liste"] as node)?.["pdv"]) as Station[]);
+      this.saveToDB(((xml["pdv_liste"] as node)?.["pdv"]) as StationXML[]);
       console.timeEnd("Parsing");
 
       //Deno.remove(resultat);
@@ -33,7 +30,9 @@ export class DownloadData {
     }
   }
 
-  private saveToDB(data: Station[]): void {
+  private saveToDB(data: StationXML[]): void {
+    const mapper = new XmlMapper();
+    data.map(d => mapper.mapStation(d));
   }
 }
 
