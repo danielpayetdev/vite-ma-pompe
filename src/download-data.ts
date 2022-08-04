@@ -1,5 +1,4 @@
 import { document, join, node, os } from "./deps.ts";
-import { Station } from "./type/station.ts";
 import { StationXML } from "./type/xml/station.ts";
 import { XmlMapper } from "./utils/xml-mapper.ts";
 

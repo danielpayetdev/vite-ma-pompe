@@ -1,7 +1,5 @@
 import { Presence } from "../presence.ts";
-import { Horaire, Jour, Prix, Station } from "../station.ts";
 import { TypeCarburant } from "../type-carburant.ts";
-
 
 export interface StationXML {
   '@id': string;
@@ -21,7 +19,7 @@ export interface HoraireXML {
 }
 
 export interface JourXML {
-  '@id': number;
+  '@id': 1 | 2 | 3 | 4 | 5 | 6 | 7;
   '@nom': string;
   '@ferme': boolean;
 }

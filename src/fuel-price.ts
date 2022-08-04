@@ -1,9 +1,9 @@
-import { getStationForID } from "./database.ts";
+// import { getStationForID } from "./database.ts";
 import { TypeCarburant } from "./type/type-carburant.ts";
 
 export class FuelPrice {
-  public getStation(id: string, _typeCarburant: TypeCarburant) {
-    return getStationForID(id);
+  public getStation(_id: string, _typeCarburant: TypeCarburant) {
+    //return getStationForID(id);
   }
 }
 
