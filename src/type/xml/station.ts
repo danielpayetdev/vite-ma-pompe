@@ -1,16 +1,16 @@
 import { Presence } from "../presence.ts";
-import { TypeCarburant } from "../type-carburant.ts";
+import { NomCarburant, TypeCarburant } from "../type-carburant.ts";
 
 export interface StationXML {
-  '@id': string;
+  '@id': number;
   '@latitude': number;
   '@longitude': number;
   '@cp': string;
   '@pop': Presence;
   adresse: string;
   ville: string;
-  horaires: HoraireXML;
-  prix: PrixXML[];
+  horaires?: HoraireXML;
+  prix?: PrixXML[];
 }
 
 export interface HoraireXML {
@@ -25,8 +25,8 @@ export interface JourXML {
 }
 
 export interface PrixXML {
-  '@id': string;
-  '@nom': TypeCarburant;
+  '@id': TypeCarburant;
+  '@nom': NomCarburant;
   '@maj': string;
-  '@valeur': string;
+  '@valeur': number;
 }

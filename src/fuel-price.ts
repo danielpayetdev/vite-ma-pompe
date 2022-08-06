@@ -1,11 +1,9 @@
-// import { getStationForID } from "./database.ts";
+import { getStations } from "./database.ts";
 import { TypeCarburant } from "./type/type-carburant.ts";
 
 export class FuelPrice {
-  public getStation(_id: string, _typeCarburant: TypeCarburant) {
-    //return getStationForID(id);
+  public async getPrice(_id: number, _typeCarburant: TypeCarburant) {
+    const db = await getStations();
+    return db.find((s) => s.id === _id)?.prix?.find((p) => p.id_carburant === _typeCarburant)?.valeur;
   }
 }
-
-// Total: 57000022
-// Cora: 57160001

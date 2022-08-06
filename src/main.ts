@@ -1,16 +1,20 @@
-import { initDB } from "./database.ts";
 import { Context, Hono, serve } from "./deps.ts";
-//import { DownloadData } from "./download-data.ts";
-import { FuelPrice } from './fuel-price.ts'
-import { TypeCarburant } from './type/type-carburant.ts'
+import { DownloadData } from "./download-data.ts";
+import { FuelPrice } from "./fuel-price.ts";
+import { TypeCarburant } from "./type/type-carburant.ts";
 
-const app = new Hono()
+const app = new Hono();
 
 const fuelPrice = new FuelPrice();
 
-//new DownloadData().download();
-initDB();
+new DownloadData().download();
+app.get("/stations/:id/carburant/:typeCarburant/prix", async (c: Context) => {
+  const id = +c.req.param("id");
+  const typeCarburant: TypeCarburant = +c.req.param("typeCarburant");
+  const prix = await fuelPrice.getPrice(id, typeCarburant);
+  return prix ? c.json(prix) : c.notFound();
+});
 
-app.get('/', (c: Context) => c.json(fuelPrice.getStation("57000022", TypeCarburant.E85)))
+const port = +(Deno.env.get("PORT") ?? 3000);
 
-serve(app.fetch);
+serve(app.fetch, { port });

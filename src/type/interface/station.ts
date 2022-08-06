@@ -1,16 +1,16 @@
 import { Presence } from "../presence.ts";
-import { TypeCarburant } from "../type-carburant.ts";
+import { NomCarburant, TypeCarburant } from "../type-carburant.ts";
 
 export interface Station {
-  id: string;
+  id: number;
   latitude: number;
   longitude: number;
   cp: string;
   pop: Presence;
   adresse: string;
   ville: string;
-  horaires: Horaire;
-  prix: Prix[];
+  horaires?: Horaire;
+  prix?: Prix[];
 }
 
 export interface Horaire {
@@ -28,8 +28,8 @@ export interface Jour {
 
 export interface Prix {
   id?: number;
-  id_carburant: string;
-  nom: TypeCarburant;
+  id_carburant: TypeCarburant;
+  nom: NomCarburant;
   maj: string;
-  valeur: string;
+  valeur: number;
 }

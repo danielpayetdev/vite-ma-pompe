@@ -16,11 +16,13 @@ export class XmlMapper {
     };
   }
 
-  private mapHoraire(xml: HoraireXML): Horaire {
-    return {
-      automate2424: xml["@automate-24-24"],
-      jour: this.mapJour(xml.jour),
-    };
+  private mapHoraire(xml?: HoraireXML): Horaire | undefined {
+    return xml !== undefined
+      ? {
+          automate2424: xml["@automate-24-24"],
+          jour: this.mapJour(xml.jour),
+        }
+      : undefined;
   }
 
   private mapJour(xml: JourXML[]): Jour[] {
@@ -31,12 +33,23 @@ export class XmlMapper {
     }));
   }
 
-  private mapPrix(xml: PrixXML[]): Prix[] {
-    return xml.map((prix) => ({
-      id_carburant: prix["@id"],
-      nom: prix["@nom"],
-      maj: prix["@maj"],
-      valeur: prix["@valeur"],
-    }));
+  private mapPrix(xml?: PrixXML[] | PrixXML): Prix[] | undefined {
+    if (xml === undefined) {
+      return undefined;
+    } else if (Array.isArray(xml)) {
+      return xml?.map((prix) => ({
+        id_carburant: prix["@id"],
+        nom: prix["@nom"],
+        maj: prix["@maj"],
+        valeur: prix["@valeur"],
+      }));
+    } else{
+      return [{
+        id_carburant: xml["@id"],
+        nom: xml["@nom"],
+        maj: xml["@maj"],
+        valeur: xml["@valeur"],
+      }];
+    }
   }
 }

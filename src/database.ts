@@ -1,19 +1,42 @@
-import { Database, SQLite3Connector } from "./deps.ts";
-import { HoraireModel, JourModel, PrixModel, StationModel } from "./type/model/station.ts";
+import { Station } from "./type/interface/station.ts";
 
-const DB_NAME = "fuel-price.db";
+interface StoreDBData {
+  stations: Station[];
+  lastUpdate: Date;
+}
 
-const connection = new SQLite3Connector({
-  filepath: DB_NAME,
-});
+export async function initDB(stations: Station[]): Promise<void> {
+  await Deno.writeFile(
+    "db.json",
+    new TextEncoder().encode(
+      JSON.stringify({
+        stations: stations,
+        lastUpdate: new Date(),
+      })
+    )
+  );
+}
 
-export async function initDB(): Promise<Database> {
-  const d = new Database(connection);
-  d.link([StationModel, HoraireModel, JourModel, PrixModel]);
-  d.sync({ drop: true });
-  await JourModel.create({
-    nom: "lundi",
-    ferme: false,
-  });
-  return d;
+export async function getStations(): Promise<Station[]> {
+  return (await getDB()).stations;
+}
+
+export async function getDB(): Promise<StoreDBData> {
+  const db = await Deno.readFile("db.json");
+  return JSON.parse(new TextDecoder().decode(db));
+}
+
+const DB_EXPIRATION_TIME_MS = 600000 * 60 * 24; // 10 minutes
+
+export async function isDataBaseOutdated(): Promise<boolean> {
+  try {
+    await Deno.lstat("db.json");
+    const dbDate = new Date((await getDB()).lastUpdate);
+    if (dbDate.getTime() + DB_EXPIRATION_TIME_MS < new Date().getTime()) {
+      throw new Error("Database is outdated");
+    }
+    return false;
+  } catch (_) {
+    return true;
+  }
 }
