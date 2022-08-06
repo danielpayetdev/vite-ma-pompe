@@ -26,7 +26,7 @@ export async function getDB(): Promise<StoreDBData> {
   return JSON.parse(new TextDecoder().decode(db));
 }
 
-const DB_EXPIRATION_TIME_MS = 600000 * 60 * 24; // 10 minutes
+const DB_EXPIRATION_TIME_MS = 600000; // 10 minutes
 
 export async function isDataBaseOutdated(): Promise<boolean> {
   try {
