@@ -1,46 +1,55 @@
 import { Station } from "./type/interface/station.ts";
 
+const DB_EXPIRATION_TIME_MS = 600000; // 10 minutes
+
 interface StoreDBData {
   stations: Station[];
   lastUpdate: Date;
 }
 
-export async function initDB(stations: Station[]): Promise<void> {
-  await Deno.writeFile(
-    "db.json",
-    new TextEncoder().encode(
-      JSON.stringify({
+export class Database {
+  private inMemoryData?: StoreDBData;
+
+  public async saveStations(stations?: Station[]): Promise<void> {
+    if (stations) {
+      this.inMemoryData = {
         stations: stations,
         lastUpdate: new Date(),
-      })
-    )
-  );
-}
-
-export async function getStations(): Promise<Station[]> {
-  return (await getDB()).stations;
-}
-
-export async function getDB(): Promise<StoreDBData> {
-  try{
-    const db = await Deno.readFile("db.json");
-    return JSON.parse(new TextDecoder().decode(db));
-  } catch (_) {
-    return {stations: [], lastUpdate: new Date()};
-  }
-}
-
-const DB_EXPIRATION_TIME_MS = 600000; // 10 minutes
-
-export async function isDataBaseOutdated(): Promise<boolean> {
-  try {
-    await Deno.lstat("db.json");
-    const dbDate = new Date((await getDB()).lastUpdate);
-    if (dbDate.getTime() + DB_EXPIRATION_TIME_MS < new Date().getTime()) {
-      throw new Error("Database is outdated");
+      };
+      await Deno.writeFile(
+        "db.json",
+        new TextEncoder().encode(
+          JSON.stringify(this.inMemoryData)
+        )
+      );
     }
-    return false;
-  } catch (_) {
-    return true;
+  }
+
+  public async getStations(): Promise<Station[]> {
+    return this.inMemoryData?.stations ?? (await this.getDB()).stations;
+  }
+
+  public async isDataBaseOutdated(): Promise<boolean> {
+    try {
+      await Deno.lstat("db.json");
+      const dbDate = new Date((await this.getDB()).lastUpdate);
+      if (dbDate.getTime() + DB_EXPIRATION_TIME_MS < new Date().getTime()) {
+        throw new Error("Database is outdated");
+      }
+      return false;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  private async getDB(): Promise<StoreDBData> {
+    try {
+      const db = await Deno.readFile("db.json");
+      const data = JSON.parse(new TextDecoder().decode(db));
+      this.inMemoryData = data;
+      return data;
+    } catch (_) {
+      return { stations: [], lastUpdate: new Date() };
+    }
   }
 }
