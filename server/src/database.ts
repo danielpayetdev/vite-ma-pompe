@@ -22,8 +22,12 @@ export async function getStations(): Promise<Station[]> {
 }
 
 export async function getDB(): Promise<StoreDBData> {
-  const db = await Deno.readFile("db.json");
-  return JSON.parse(new TextDecoder().decode(db));
+  try{
+    const db = await Deno.readFile("db.json");
+    return JSON.parse(new TextDecoder().decode(db));
+  } catch (_) {
+    return {stations: [], lastUpdate: new Date()};
+  }
 }
 
 const DB_EXPIRATION_TIME_MS = 600000; // 10 minutes

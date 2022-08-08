@@ -7,9 +7,11 @@ const app = new Hono();
 
 const fuelPrice = new FuelPrice();
 
-new DownloadData().download();
+console.log("Starting server...");
+await new DownloadData().download();
+
 hourly(() => {
-  new DownloadData().download();
+  new Worker(new URL("download-worker.ts", import.meta.url).href, {type: "module"});
 });
 
 app.get("/stations/:id/carburant/:typeCarburant/prix", async (c: Context) => {

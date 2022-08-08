@@ -8,21 +8,29 @@ export class DownloadData {
 
   public async download(): Promise<void> {
     if (await isDataBaseOutdated()) {
-      console.log("Datbase is outdated. Downloading new data...");
+      console.log("Datbase is outdated or does not exist. Downloading new data...");
       const temp = join(os.tempDir(), "prix_temp");
       let resultat = await unZipFromURL(DownloadData.URL, temp);
       if (resultat) {
         resultat += "/PrixCarburants_instantane.xml";
         const stations = new TextDecoder("windows-1252").decode(await Deno.readFile(resultat));
-        console.time("Parsing");
+        console.time("Parsing time");
+        Deno.stdout.writeSync(new TextEncoder().encode("Parsing (it may take a while)..."));
+        let previousTime = new Date().getTime();
         const xml = parse(stations, {
           reviveBooleans: true,
           reviveNumbers: true,
-          progress: (bytes) => Deno.stdout.writeSync(new TextEncoder().encode(`Parsing document: ${((100 * bytes) / stations.length).toFixed(2)}%\r`)),
+          progress: () => {
+            const currentTime = new Date().getTime();
+            if (previousTime + 1000 < currentTime) {
+              Deno.stdout.writeSync(new TextEncoder().encode(`.`));
+              previousTime = currentTime;
+            }
+          },
         });
-        console.log();
+        console.log("Done.");
         this.saveToDB((xml["pdv_liste"] as node)?.["pdv"] as StationXML[]);
-        console.timeEnd("Parsing");
+        console.timeEnd("Parsing time");
         Deno.remove(resultat);
       } else {
         throw new Error("Error while unzip data");
