@@ -18,7 +18,6 @@ ADD ./src .
 
 RUN deno cache main.ts
 
-
 CMD [\
     "run",\
     "--allow-env",\
