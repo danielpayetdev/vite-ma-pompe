@@ -1,6 +1,5 @@
 import { Database } from "./database.ts";
 import { Context, Hono, hourly, serve } from "./deps.ts";
-import { DownloadData } from "./download-data.ts";
 import { FuelPrice } from "./fuel-price.ts";
 import { TypeCarburant } from "./type/type-carburant.ts";
 
@@ -10,17 +9,22 @@ const fuelPrice = new FuelPrice(database);
 
 console.log("Starting server...");
 
-if(await database.isDataBaseOutdated()) {
-  database.saveStations(await new DownloadData().download());
+if (await database.isDataBaseOutdated()) {
+  startWorker();
 }
 
-hourly(() => {
-  const w = new Worker(new URL("download-worker.ts", import.meta.url).href, { type: "module" });
+hourly(() => startWorker());
+
+function startWorker() {
+  const w = new Worker(new URL("download-worker.ts", import.meta.url).href, {
+    type: "module",
+    deno: true,
+  });
   w.onmessage = (event) => {
     database.saveStations(event.data);
   };
   w.postMessage({});
-});
+}
 
 app.get("/stations/:id/carburant/:typeCarburant/prix", async (c: Context) => {
   const id = +c.req.param("id");
