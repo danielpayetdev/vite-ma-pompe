@@ -30,7 +30,7 @@ app.get("/stations/:id/carburant/:typeCarburant/prix", async (c: Context) => {
   const id = +c.req.param("id");
   const typeCarburant: TypeCarburant = +c.req.param("typeCarburant");
   const prix = await fuelPrice.getPrice(id, typeCarburant);
-  return prix ? c.json(prix) : c.notFound();
+  return prix ? c.json({prix}) : c.notFound();
 });
 
 const port = +(Deno.env.get("PORT") ?? 3000);

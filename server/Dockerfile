@@ -13,7 +13,7 @@ CMD [\
     "run",\
     "--allow-env",\
     "--allow-run=unzip",\
-    "--allow-read=db.json,/appTemp,/app/main.ts",\
+    "--allow-read=db.json,/appTemp,/app/main.ts,/app/download-worker.ts",\
     "--allow-write=db.json,/appTemp",\
     "--allow-net=0.0.0.0:8000,donnees.roulez-eco.fr",\
     "main.ts"\
