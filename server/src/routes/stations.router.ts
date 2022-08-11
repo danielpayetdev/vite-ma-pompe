@@ -18,6 +18,15 @@ export class StationRouter {
       return prix ? c.json({ prix }) : c.notFound();
     });
 
+    station.get("", async (c: Context) => {
+      const latitude = +c.req.query("lat");
+      const longitude = +c.req.query("long");
+      const rayon = +c.req.query("r");
+      const limit = +c.req.query("limit");
+      const stations = await this.stationService.aroundPosition(latitude, longitude, rayon, limit);
+      return stations ? c.json({ stations }) : c.notFound();
+    });
+
     return station;
   }
 }
