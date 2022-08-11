@@ -16,7 +16,7 @@ export class StationService {
     const stations = await this.database.getStations();
     console.time("aroundPosition");
     const stationsAround = stations.filter((s) => {
-      return this.distance(s.latitude /10000, s.longitude / 10000, latitude, longitude) <= rayon;
+      return this.distance(s.latitude /100000, s.longitude / 100000, latitude, longitude, s) <= rayon;
     });
     console.timeEnd("aroundPosition");
     return limit ? stationsAround.slice(0, limit) : stationsAround;

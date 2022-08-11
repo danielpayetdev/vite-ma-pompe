@@ -31,10 +31,10 @@ export class Database {
   public async isDataBaseOutdated(): Promise<boolean> {
     try {
       await Deno.lstat("db.json");
-      const dbDate = new Date((await this.getDB()).lastUpdate);
-      if (dbDate.getTime() + DB_EXPIRATION_TIME_MS < new Date().getTime()) {
-        throw new Error("Database is outdated");
-      }
+      // const dbDate = new Date((await this.getDB()).lastUpdate);
+      // if (dbDate.getTime() + DB_EXPIRATION_TIME_MS < new Date().getTime()) {
+      //   throw new Error("Database is outdated");
+      // }
       console.log("Database is up to date");
       return false;
     } catch (_) {
