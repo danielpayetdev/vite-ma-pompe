@@ -1,38 +1,37 @@
-import { Database } from "./database.ts";
-import { Context, Hono, hourly, serve } from "./deps.ts";
-import { FuelPrice } from "./fuel-price.ts";
-import { TypeCarburant } from "./type/type-carburant.ts";
+import { Hono, hourly, serve, Bootstrapped, bootstrap } from "./deps.ts";
+import { AppRouter } from "./routes/app-router.ts";
+import { Database } from "./services/database.ts";
 
-const app = new Hono();
-const database = new Database();
-const fuelPrice = new FuelPrice(database);
+@Bootstrapped()
+export class Main {
+  private app: Hono;
 
-console.log("Starting server...");
+  constructor(public router: AppRouter, public database: Database) {
+    this.app = new Hono();
+    this.router.initialiserRoute(this.app);
+  }
 
-if (await database.isDataBaseOutdated()) {
-  startWorker();
+  public async startApp(): Promise<void> {
+    console.log("Starting server...");
+
+    if (await this.database.isDataBaseOutdated()) {
+      this.startWorker();
+    }
+    hourly(() => this.startWorker());
+
+    const port = +(Deno.env.get("PORT") ?? 3000);
+    return serve(this.app.fetch, { port });
+  }
+
+  private startWorker() {
+    const w = new Worker(new URL("download-worker.ts", import.meta.url).href, {
+      type: "module",
+    });
+    w.onmessage = (event) => {
+      this.database.saveStations(event.data);
+    };
+    w.postMessage({});
+  }
 }
 
-hourly(() => startWorker());
-
-function startWorker() {
-  const w = new Worker(new URL("download-worker.ts", import.meta.url).href, {
-    type: "module",
-    deno: true,
-  });
-  w.onmessage = (event) => {
-    database.saveStations(event.data);
-  };
-  w.postMessage({});
-}
-
-app.get("/stations/:id/carburant/:typeCarburant/prix", async (c: Context) => {
-  const id = +c.req.param("id");
-  const typeCarburant: TypeCarburant = +c.req.param("typeCarburant");
-  const prix = await fuelPrice.getPrice(id, typeCarburant);
-  return prix ? c.json({prix}) : c.notFound();
-});
-
-const port = +(Deno.env.get("PORT") ?? 3000);
-
-serve(app.fetch, { port });
+bootstrap(Main).startApp();

@@ -7,3 +7,5 @@ export { unZipFromURL } from "https://deno.land/x/zip@v1.1.0/mod.ts";
 export { parse } from "https://deno.land/x/xml@2.0.4/mod.ts";
 export type { document, node } from "https://deno.land/x/xml@2.0.4/utils/types.ts";
 export { hourly } from "https://deno.land/x/deno_cron@v1.0.0/cron.ts";
+export { Bootstrapped, bootstrap, Injectable } from "./di/mod.ts";
+

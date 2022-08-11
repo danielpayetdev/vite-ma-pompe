@@ -1,7 +1,9 @@
 import { Database } from "./database.ts";
-import { TypeCarburant } from "./type/type-carburant.ts";
+import { Injectable } from "../deps.ts";
+import { TypeCarburant } from "../type/type-carburant.ts";
 
-export class FuelPrice {
+@Injectable()
+export class StationService {
   constructor(private database: Database) {}
 
   public async getPrice(_id: number, _typeCarburant: TypeCarburant) {

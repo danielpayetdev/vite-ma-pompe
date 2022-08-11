@@ -1,7 +1,7 @@
-import { join, node, os, parse, unZipFromURL } from "./deps.ts";
-import { StationXML } from "./type/xml/station.ts";
-import { XmlMapper } from "./services/xml-mapper.ts";
-import { Station } from "./type/interface/station.ts";
+import { join, node, os, parse, unZipFromURL } from "../deps.ts";
+import { StationXML } from "../type/xml/station.ts";
+import { XmlMapper } from "./xml-mapper.ts";
+import { Station } from "../type/interface/station.ts";
 
 export class DownloadData {
   private static readonly URL = "https://donnees.roulez-eco.fr/opendata/instantane";
