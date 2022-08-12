@@ -19,11 +19,11 @@ export class StationRouter {
     });
 
     station.get("", async (c: Context) => {
-      const latitude = +c.req.query("lat");
-      const longitude = +c.req.query("long");
-      const rayon = +c.req.query("r");
-      const limit = +c.req.query("limit");
-      const stations = await this.stationService.aroundPosition(latitude, longitude, rayon, limit);
+      const { lat, long, r, limit, carburant } = c.req.query();
+      if(lat === undefined || long === undefined) {
+        return c.body("Latitude or longitude aren't set.", 400);
+      }
+      const stations = await this.stationService.aroundPosition(+lat, +long, +r ?? 10, +limit, +carburant);
       return stations ? c.json({ stations }) : c.notFound();
     });
 

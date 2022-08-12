@@ -5,8 +5,8 @@ export class XmlMapper {
   public mapStation(xml: StationXML): Station {
     return {
       id: xml["@id"],
-      latitude: xml["@latitude"],
-      longitude: xml["@longitude"],
+      latitude: xml["@latitude"] /100000,
+      longitude: xml["@longitude"] /100000,
       cp: xml["@cp"],
       pop: xml["@pop"],
       adresse: xml.adresse,
