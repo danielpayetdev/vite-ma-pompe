@@ -9,7 +9,13 @@ export class DownloadData {
   public async download(): Promise<Station[] | undefined> {
     console.log("Downloading new data...");
     const temp = join(os.tempDir(), "prix_temp");
-    let resultat = await unZipFromURL(DownloadData.URL, temp);
+    let resultat: string | false;
+    try{
+      resultat = await unZipFromURL(DownloadData.URL, temp);
+    } catch(e){
+      console.error('Failed to download data.',e);
+      return;
+    }
     if (resultat) {
       resultat += "/PrixCarburants_instantane.xml";
       const stations = new TextDecoder("windows-1252").decode(await Deno.readFile(resultat));
