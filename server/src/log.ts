@@ -22,7 +22,7 @@ export const configureLogger = async (loggerName: string) => {
 
 const getDate = () => {
   const date = new Date();
-  return `${formatNumber(date.getDate())}/${formatNumber(date.getMonth() + 1)}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+  return `${formatNumber(date.getDate())}/${formatNumber(date.getMonth() + 1)}/${date.getFullYear()} ${formatNumber(date.getHours())}:${formatNumber(date.getMinutes())}:${formatNumber(date.getSeconds())}`;
 };
 
 const formatNumber = (number: number) => {
