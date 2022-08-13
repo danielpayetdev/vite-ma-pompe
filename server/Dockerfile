@@ -6,6 +6,7 @@ RUN mkdir $TEMP
 RUN apk add unzip
 WORKDIR /app
 ADD ./src .
+ADD ../deno.json .
 RUN deno cache main.ts
 CMD [\
     "run",\
