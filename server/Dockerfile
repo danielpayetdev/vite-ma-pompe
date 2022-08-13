@@ -5,8 +5,6 @@ ENV TEMP /appTemp
 RUN mkdir $TEMP
 RUN apk add unzip
 WORKDIR /app
-COPY ./src/deps.ts .
-#RUN deno cache deps.ts
 ADD ./src .
 RUN deno cache main.ts
 CMD [\
