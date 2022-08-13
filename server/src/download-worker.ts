@@ -1,7 +1,5 @@
 import { DownloadData } from "./services/download-data.ts";
 
-self.onmessage = async () => await downloadData();
-
 const downloadData = async (retry = 0) => {
   const data = await new DownloadData().download();
   if(data === undefined && retry <= 3) {
@@ -11,3 +9,5 @@ const downloadData = async (retry = 0) => {
   self.postMessage(data);
   self.close();
 }
+
+await downloadData();

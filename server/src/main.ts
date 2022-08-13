@@ -15,7 +15,10 @@ export class Main {
     console.log("Starting server...");
 
     if (await this.database.isDataBaseOutdated()) {
-      this.startWorker();
+      const worker = this.startWorker();
+      if (!this.database.isCacheValid()) {
+        await worker;
+      }
     }
     hourly(() => this.startWorker());
 
@@ -23,14 +26,15 @@ export class Main {
     return serve(this.app.fetch, { port });
   }
 
-  private startWorker() {
-    const w = new Worker(new URL("download-worker.ts", import.meta.url).href, {
-      type: "module",
+  private startWorker(): Promise<void> {
+    return new Promise((resolve) => {
+      const w = new Worker(new URL("download-worker.ts", import.meta.url).href, {
+        type: "module",
+      });
+      w.onmessage = (event) => {
+        this.database.saveStations(event.data).then(() => resolve());
+      };
     });
-    w.onmessage = (event) => {
-      this.database.saveStations(event.data);
-    };
-    w.postMessage({});
   }
 }
 

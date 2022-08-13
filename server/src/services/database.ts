@@ -43,6 +43,10 @@ export class Database {
     }
   }
 
+  public isCacheValid(): boolean {
+    return this.inMemoryData !== undefined;
+  }
+
   private async getDB(): Promise<StoreDBData> {
     try {
       const db = await Deno.readFile(DB_NAME);
