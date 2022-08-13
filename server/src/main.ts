@@ -1,4 +1,5 @@
-import { Hono, hourly, serve, Bootstrapped, bootstrap } from "./deps.ts";
+import { Hono, hourly, serve, Bootstrapped, bootstrap, log } from "./deps.ts";
+import { configureLogger } from "./log.ts";
 import { AppRouter } from "./routes/app-router.ts";
 import { Database } from "./services/database.ts";
 
@@ -12,7 +13,7 @@ export class Main {
   }
 
   public async startApp(): Promise<void> {
-    console.log("Starting server...");
+    log.getLogger().info("Starting server...");
 
     if (await this.database.isDataBaseOutdated()) {
       const worker = this.startWorker();
@@ -23,7 +24,10 @@ export class Main {
     hourly(() => this.startWorker());
 
     const port = +(Deno.env.get("PORT") ?? 3000);
-    return serve(this.app.fetch, { port });
+    return serve(this.app.fetch, {
+      port,
+      onListen: (params: { hostname: string; port: number }) => log.getLogger().info(`Server started on http://${params.hostname === "0.0.0.0" ? "localhost" : params.hostname}:${params.port}`),
+    });
   }
 
   private startWorker(): Promise<void> {
@@ -32,10 +36,16 @@ export class Main {
         type: "module",
       });
       w.onmessage = (event) => {
-        this.database.saveStations(event.data).then(() => resolve());
+        if (event.data) {
+          this.database.saveStations(event.data).then(() => resolve());
+        } else {
+          log.getLogger().critical("No data received from worker. Can't update database.");
+        }
       };
     });
   }
 }
+
+await configureLogger('main');
 
 bootstrap(Main).startApp();

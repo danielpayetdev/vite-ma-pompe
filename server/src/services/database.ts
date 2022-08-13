@@ -1,4 +1,4 @@
-import { Injectable } from "../deps.ts";
+import { Injectable, log } from "../deps.ts";
 import { Station } from "../type/interface/station.ts";
 
 const DB_EXPIRATION_TIME_MS = 600000; // 10 minutes
@@ -36,7 +36,7 @@ export class Database {
       if (dbDate.getTime() + DB_EXPIRATION_TIME_MS < new Date().getTime()) {
         throw new Error("Database is outdated");
       }
-      console.log("Database is up to date");
+      log.getLogger().info("Database is up to date");
       return false;
     } catch (_) {
       return true;

@@ -8,4 +8,4 @@ export { parse } from "https://deno.land/x/xml@2.0.4/mod.ts";
 export type { document, node } from "https://deno.land/x/xml@2.0.4/utils/types.ts";
 export { hourly } from "https://deno.land/x/deno_cron@v1.0.0/cron.ts";
 export { Bootstrapped, bootstrap, Injectable } from "./di/mod.ts";
-
+export * as log from "https://deno.land/std@0.152.0/log/mod.ts";
