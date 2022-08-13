@@ -1,5 +1,9 @@
 {
     "deno.enable": true,
     "deno.lint": true,
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "denoland.vscode-deno",
+    "markdownlint.config": {
+        "MD033": false,
+        "MD041": false
+    }
 }
