@@ -26,9 +26,11 @@
 </p>
 
 <h4>
-    <a href="https://github.com/danielpayetdev/vite-ma-pompe/">View Demo</a>
+    <a href="https://github.com/danielpayetdev/vite-ma-pompe/">Go to web application</a>
   <span> · </span>
-    <a href="https://github.com/danielpayetdev/vite-ma-pompe">Documentation</a>
+    <a href="https://github.com/danielpayetdev/vite-ma-pompe/">Download from PlayStore</a>
+  <span> · </span>
+    <a href="https://app.swaggerhub.com/apis-docs/danielpayetdev/ViteMaPompe/1.0.0#">API Documentation</a>
   <span> · </span>
     <a href="https://github.com/danielpayetdev/vite-ma-pompe/issues/">Report Bug</a>
   <span> · </span>
@@ -127,8 +129,6 @@ Start flutter app with cli or IDE tools
 flutter run
 ```
 
-<!-- Deployment -->
-
 ### Deployment
 
 To deploy this project with docker run
@@ -142,8 +142,6 @@ To set a different port in docker image set `PORT` environment variable
 ```bash
 PORT=1324 docker build -t myRepo/myAppName . && docker run -p 8000:8000 myRepo/myAppName
 ```
-
-<!-- Contributing -->
 
 ## Contributing
 
