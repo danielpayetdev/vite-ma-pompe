@@ -8,6 +8,6 @@ const downloadData = async (retry = 0) => {
     console.log("Retrying in 10 seconds...");
     setTimeout(() => downloadData(retry++), 10000);
   }
-  self.postMessage(downloadData());
+  self.postMessage(data);
   self.close();
 }
