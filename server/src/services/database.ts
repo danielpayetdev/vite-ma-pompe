@@ -9,6 +9,9 @@ interface StoreDBData {
   lastUpdate: Date;
 }
 
+/**
+ * Database is a json store in a file called db.json. For better performance, the data is cached in memory.
+ */
 @Injectable({
   isSingleton: true
 })

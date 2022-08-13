@@ -2,6 +2,9 @@ import { Context, Hono, Injectable } from "../deps.ts";
 import { TypeCarburant } from "../type/type-carburant.ts";
 import { StationService } from "../services/station.service.ts";
 
+/**
+ * StationRouter is responsible for the station routes.
+ */
 @Injectable()
 export class StationRouter {
 

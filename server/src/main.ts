@@ -3,6 +3,9 @@ import { configureLogger } from "./log.ts";
 import { AppRouter } from "./routes/app-router.ts";
 import { Database } from "./services/database.ts";
 
+/**
+ * Main is the entry point of the application.
+ */
 @Bootstrapped()
 export class Main {
   private app: Hono;

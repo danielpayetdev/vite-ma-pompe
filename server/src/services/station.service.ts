@@ -5,6 +5,9 @@ import { Station } from "../type/interface/station.ts";
 
 const RAYON_TERRE = 6371;
 
+/**
+ * StationService is responsible for the station data.
+ */
 @Injectable()
 export class StationService {
   constructor(private database: Database) {}

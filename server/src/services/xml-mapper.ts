@@ -1,6 +1,9 @@
 import { Horaire, Jour, Prix, Station } from "../type/interface/station.ts";
 import { StationXML, HoraireXML, JourXML, PrixXML } from "../type/xml/station.ts";
 
+/**
+ * XmlMapper is responsible for mapping the XML data to the Station type.
+ */
 export class XmlMapper {
   public mapStation(xml: StationXML): Station {
     return {
