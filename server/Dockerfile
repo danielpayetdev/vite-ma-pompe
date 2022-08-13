@@ -1,4 +1,4 @@
-FROM denoland/deno:alpine-1.24.1
+FROM denoland/deno:alpine-1.24.3
 ENV PORT 8000
 EXPOSE $PORT
 ENV TEMP /appTemp
