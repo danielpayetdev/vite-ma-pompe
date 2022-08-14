@@ -39,7 +39,7 @@ jobs:
           images: |
             danielpayet/vite-ma-pompe
             ghcr.io/${{ github.repository }}
-            ${{ IMAGE_NAME_GCP }}
+            gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
           tags: |
             type=semver,pattern={{version}}
       - name: Build and push Docker image
