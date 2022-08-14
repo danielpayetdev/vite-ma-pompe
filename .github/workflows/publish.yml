@@ -10,6 +10,8 @@ jobs:
     permissions:
       packages: write
       contents: read
+    env:
+      IMAGE_NAME_GCP: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -24,6 +26,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to gcloud
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_email: ${{ secrets.GCP_EMAIL }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+      - name: Configure Docker for gcloud
+        run: gcloud auth configure-docker --quiet
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
@@ -31,6 +41,7 @@ jobs:
           images: |
             danielpayet/vite-ma-pompe
             ghcr.io/${{ github.repository }}
+            $IMAGE_NAME_GCP
           tags: |
             type=semver,pattern={{version}}
       - name: Build and push Docker image
@@ -39,3 +50,5 @@ jobs:
           context: ./server
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+      - name: Deploy docker image Cloud run
+        run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image $IMAGE_NAME_GCP --region europe-west9 --platform managed
