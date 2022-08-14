@@ -44,7 +44,7 @@ jobs:
           images: |
             danielpayet/vite-ma-pompe
             ghcr.io/${{ github.repository }}
-            ${{ IMAGE_NAME_GCP }}
+            gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
           tags: |
             type=semver,pattern={{version}}
 
@@ -54,6 +54,6 @@ jobs:
           context: ./server
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          
+
       - name: Deploy docker image Cloud run
         run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image $IMAGE_NAME_GCP --region europe-west9 --platform managed
