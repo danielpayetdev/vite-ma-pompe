@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
-      ccontents: read
+      contents: read
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
