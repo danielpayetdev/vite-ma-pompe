@@ -28,7 +28,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: danielpayet/vite-ma-pompe
+          images: |
+            danielpayet/vite-ma-pompe
+            ghcr.io/${{ github.repository }}
           tags: |
             type=semver,pattern={{version}}
       - name: Build and push Docker image
