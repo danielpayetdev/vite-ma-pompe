@@ -56,4 +56,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
 
       - name: Deploy docker image Cloud run
-        run: gcloud run deploy ${{ secrets.GCP_APP_NAME }} --image $IMAGE_NAME_GCP --execution-environment=gen2 --region=europe-west9 --project ${{ secrets.GCP_PROJECT_ID }} && gcloud run services update-traffic vite-ma-pompe --to-latest
+        run: gcloud beta run deploy ${{ secrets.GCP_APP_NAME }} --image $IMAGE_NAME_GCP --execution-environment gen2 --region=europe-west9 --project ${{ secrets.GCP_PROJECT_ID }} && gcloud run services update-traffic vite-ma-pompe --to-latest
