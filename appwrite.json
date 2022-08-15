@@ -1,0 +1,18 @@
+{
+    "projectId": "vite-ma-pompe",
+    "projectName": "Vite ma pompe",
+    "functions": [
+        {
+            "$id": "download-data-fn",
+            "name": "DownloadData",
+            "runtime": "deno-1.21",
+            "path": "functions/DownloadData",
+            "entrypoint": "src/mod.ts",
+            "ignore": [],
+            "execute": [],
+            "events": [],
+            "schedule": "",
+            "timeout": 900
+        }
+    ]
+}
