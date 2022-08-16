@@ -2,10 +2,10 @@ import { sdk } from "./deps.ts";
 import { DownloadData } from "./download-data.ts";
 
 const DATABASE = "stations-db";
-const COLLECTION_STATION = "station-collection";
-const COLLECTION_HORAIRES = "horaires-collection";
-const COLLECTION_JOUR = "jour-collection";
-const COLLECTION_PRIX = "prix-collection";
+const COLLECTION_STATION = "stations";
+const COLLECTION_HORAIRES = "horaires";
+const COLLECTION_JOUR = "jour";
+const COLLECTION_PRIX = "prix";
 
 // deno-lint-ignore no-explicit-any
 export default async function (req: any, res: any) {
@@ -30,14 +30,6 @@ export default async function (req: any, res: any) {
 
   if (data) {
     try {
-      // For now we delete all data and insert new data. In the future we will update existing data.
-      try {
-        await database.delete();
-      } catch (_e) {
-        console.log("Database not found. Creating new one.");
-      }
-      await initDatabase(database);
-      await database.listCollections();
       await Promise.all(
         data.map(async (station) => {
           const prixDocs = await Promise.all(station.prix?.map((prix) => database.createDocument(COLLECTION_PRIX, "unique()", prix)) ?? []);
@@ -58,41 +50,6 @@ export default async function (req: any, res: any) {
 
   res.send("ok", 200);
 }
-
-const initDatabase = async (database: sdk.Databases) => {
-  await database.create(DATABASE);
-  await Promise.allSettled([
-    database.createCollection(COLLECTION_STATION, "station", "collection", ["role:all"], ["role:all"]),
-    database.createCollection(COLLECTION_HORAIRES, "horaires", "collection", ["role:all"], ["role:all"]),
-    database.createCollection(COLLECTION_JOUR, "jour", "collection", ["role:all"], ["role:all"]),
-    database.createCollection(COLLECTION_PRIX, "prix", "collection", ["role:all"], ["role:all"]),
-  ]);
-
-  await Promise.allSettled([
-    // Station
-    database.createIntegerAttribute(COLLECTION_STATION, "id", true),
-    database.createFloatAttribute(COLLECTION_STATION, "latitude", true),
-    database.createFloatAttribute(COLLECTION_STATION, "longitude", true),
-    database.createIntegerAttribute(COLLECTION_STATION, "cp", true),
-    database.createStringAttribute(COLLECTION_STATION, "pop", 1, false),
-    database.createStringAttribute(COLLECTION_STATION, "adresse", 255, false),
-    database.createStringAttribute(COLLECTION_STATION, "ville", 255, false),
-    database.createStringAttribute(COLLECTION_STATION, "horaires", 30, false),
-    database.createStringAttribute(COLLECTION_STATION, "prix", 30, false, undefined, true),
-    // Horaire
-    database.createBooleanAttribute(COLLECTION_HORAIRES, "automate2424", false),
-    database.createStringAttribute(COLLECTION_HORAIRES, "jour", 30, false, undefined, false),
-    // Jour
-    database.createIntegerAttribute(COLLECTION_JOUR, "id_jour", true),
-    database.createStringAttribute(COLLECTION_JOUR, "nom", 8, true),
-    database.createBooleanAttribute(COLLECTION_JOUR, "ferme", false),
-    // Prix
-    database.createIntegerAttribute(COLLECTION_PRIX, "id_carburant", true),
-    database.createEnumAttribute(COLLECTION_PRIX, "nom", ["Gazole", "SP95", "E85", "GPLc", "E10", "SP98"], true),
-    database.createStringAttribute(COLLECTION_PRIX, "maj", 19, true),
-    database.createFloatAttribute(COLLECTION_PRIX, "valeur", false),
-  ]);
-};
 
 const fakeData = [
   {
