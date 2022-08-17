@@ -11,19 +11,15 @@
       "ignore": [],
       "execute": [],
       "events": [],
-      "schedule": "",
+      "schedule": "0 0 * * *",
       "timeout": 900
     }
   ],
   "collections": [
     {
       "$id": "stations",
-      "$read": [
-        "role:all"
-      ],
-      "$write": [
-        "role:all"
-      ],
+      "$read": ["role:all"],
+      "$write": ["role:all"],
       "databaseId": "stations-db",
       "name": "Station",
       "enabled": true,
@@ -81,16 +77,19 @@
           "size": 30
         }
       ],
-      "indexes": []
+      "indexes": [
+        {
+          "key": "id",
+          "type": "unique",
+          "attributes": ["id"],
+          "orders": ["ASC"]
+        }
+      ]
     },
     {
       "$id": "horaires",
-      "$read": [
-        "role:all"
-      ],
-      "$write": [
-        "role:all"
-      ],
+      "$read": ["role:all"],
+      "$write": ["role:all"],
       "databaseId": "stations-db",
       "name": "Horaires",
       "enabled": true,
@@ -113,12 +112,8 @@
     },
     {
       "$id": "jour",
-      "$read": [
-        "role:all"
-      ],
-      "$write": [
-        "role:all"
-      ],
+      "$read": ["role:all"],
+      "$write": ["role:all"],
       "databaseId": "stations-db",
       "name": "Jour",
       "enabled": true,
@@ -145,12 +140,8 @@
     },
     {
       "$id": "prix",
-      "$read": [
-        "role:all"
-      ],
-      "$write": [
-        "role:all"
-      ],
+      "$read": ["role:all"],
+      "$write": ["role:all"],
       "databaseId": "stations-db",
       "name": "Prix",
       "enabled": true,
@@ -165,14 +156,7 @@
           "key": "nom",
           "type": "string",
           "required": true,
-          "elements": [
-            "Gazole",
-            "SP95",
-            "E85",
-            "GPLc",
-            "E10",
-            "SP98"
-          ],
+          "elements": ["Gazole", "SP95", "E85", "GPLc", "E10", "SP98"],
           "format": "enum"
         },
         {

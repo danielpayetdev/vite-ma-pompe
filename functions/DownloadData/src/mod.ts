@@ -1,3 +1,4 @@
+import { Query } from "https://deno.land/x/appwrite@5.0.1/mod.ts";
 import { sdk } from "./deps.ts";
 import { DownloadData } from "./download-data.ts";
 
@@ -27,15 +28,31 @@ export default async function (req: any, res: any) {
   }
 
   const data = fakeData; //await new DownloadData().download();
-
   if (data) {
+    const oldPrixDocs = await database.listDocuments(COLLECTION_PRIX);
+    const oldJourDoc = await database.listDocuments(COLLECTION_PRIX);
+    const oldHorairesDoc = await database.listDocuments(COLLECTION_PRIX);
     try {
       await Promise.all(
         data.map(async (station) => {
           const prixDocs = await Promise.all(station.prix?.map((prix) => database.createDocument(COLLECTION_PRIX, "unique()", prix)) ?? []);
           const jourDocs = await Promise.all(station.horaires?.jour?.map((jour) => database.createDocument(COLLECTION_JOUR, "unique()", jour)) ?? []);
           const horairesDoc = await database.createDocument(COLLECTION_HORAIRES, "unique()", { ...station.horaires, jour: jourDocs.map((j) => j.$id) });
-          await database.createDocument(COLLECTION_STATION, station.id.toString(), { ...station, horaires: horairesDoc.$id, prix: prixDocs.map((d) => d.$id) });
+          console.log(await database.listDocuments(COLLECTION_STATION, [Query.equal("id", station.id)]));
+          if ((await database.listDocuments(COLLECTION_STATION, [Query.equal("id", station.id)])).total !== 0) {
+            await database.updateDocument(COLLECTION_STATION, station.id.toString(), {
+              ...station,
+              prix: prixDocs.map((p) => p.$id),
+              horaires: horairesDoc.$id,
+            });
+          } else {
+            await database.createDocument(COLLECTION_STATION, station.id.toString(), { ...station, horaires: horairesDoc.$id, prix: prixDocs.map((d) => d.$id) });
+          }
+          await Promise.all([
+            ...oldPrixDocs.documents.map((d) => database.deleteDocument(COLLECTION_PRIX, d.$id)),
+            ...oldJourDoc.documents.map((d) => database.deleteDocument(COLLECTION_JOUR, d.$id)),
+            ...oldHorairesDoc.documents.map((d) => database.deleteDocument(COLLECTION_HORAIRES, d.$id)),
+          ]);
         })
       );
     } catch (e) {
@@ -73,10 +90,10 @@ const fakeData = [
       ],
     },
     prix: [
-      // { id_carburant: 1, nom: "Gazole", maj: "2022-08-11 12:54:51", valeur: 1.769 },
-      //{ id_carburant: 3, nom: "E85", maj: "2022-08-11 12:54:51", valeur: 0.759 },
-      //{ id_carburant: 5, nom: "E10", maj: "2022-08-11 12:54:51", valeur: 1.716 },
-      //{ id_carburant: 6, nom: "SP98", maj: "2022-08-11 12:54:52", valeur: 1.819 },
+      { id_carburant: 1, nom: "Gazole", maj: "2022-08-11 12:54:51", valeur: 1.769 },
+      { id_carburant: 3, nom: "E85", maj: "2022-08-11 12:54:51", valeur: 0.759 },
+      { id_carburant: 5, nom: "E10", maj: "2022-08-11 12:54:51", valeur: 1.716 },
+      { id_carburant: 6, nom: "SP98", maj: "2022-08-11 12:54:52", valeur: 1.819 },
     ],
   },
 ];
