@@ -17,7 +17,6 @@ export default async function (req: any, res: any) {
   if (!req.env["APPWRITE_FUNCTION_ENDPOINT"] || !req.env["APPWRITE_FUNCTION_API_KEY"]) {
     console.warn("Environment variables are not set. Function cannot use Appwrite SDK.");
   } else {
-    console.log(req.env);
     client
       .setEndpoint(req.env["APPWRITE_FUNCTION_ENDPOINT"] as string)
       .setProject(req.env["APPWRITE_FUNCTION_PROJECT_ID"] as string)
