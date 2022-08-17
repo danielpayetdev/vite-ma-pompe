@@ -67,108 +67,33 @@
           "key": "horaires",
           "type": "string",
           "required": false,
-          "size": 30
+          "size": 1073741824
         },
         {
           "key": "prix",
           "type": "string",
           "required": false,
           "array": true,
-          "size": 30
-        }
-      ],
-      "indexes": [
-        {
-          "key": "id",
-          "type": "unique",
-          "attributes": ["id"],
-          "orders": ["ASC"]
-        }
-      ]
-    },
-    {
-      "$id": "horaires",
-      "$read": ["role:all"],
-      "$write": ["role:all"],
-      "databaseId": "stations-db",
-      "name": "Horaires",
-      "enabled": true,
-      "permission": "collection",
-      "attributes": [
-        {
-          "key": "jour",
-          "type": "string",
-          "required": false,
-          "array": true,
-          "size": 30
-        },
-        {
-          "key": "automate2424",
-          "type": "boolean",
-          "required": false
+          "size": 1073741824
         }
       ],
       "indexes": []
     },
     {
-      "$id": "jour",
+      "$id": "historique",
       "$read": ["role:all"],
       "$write": ["role:all"],
       "databaseId": "stations-db",
-      "name": "Jour",
+      "name": "Historique",
       "enabled": true,
       "permission": "collection",
       "attributes": [
         {
-          "key": "id_jour",
-          "type": "integer",
-          "required": true
-        },
-        {
-          "key": "nom",
+          "key": "stations",
           "type": "string",
+          "size": 30,
           "required": true,
-          "size": 8
-        },
-        {
-          "key": "ferme",
-          "type": "boolean",
-          "required": false
-        }
-      ],
-      "indexes": []
-    },
-    {
-      "$id": "prix",
-      "$read": ["role:all"],
-      "$write": ["role:all"],
-      "databaseId": "stations-db",
-      "name": "Prix",
-      "enabled": true,
-      "permission": "collection",
-      "attributes": [
-        {
-          "key": "id_carburant",
-          "type": "integer",
-          "required": true
-        },
-        {
-          "key": "nom",
-          "type": "string",
-          "required": true,
-          "elements": ["Gazole", "SP95", "E85", "GPLc", "E10", "SP98"],
-          "format": "enum"
-        },
-        {
-          "key": "maj",
-          "type": "string",
-          "required": true,
-          "size": 19
-        },
-        {
-          "key": "valeur",
-          "type": "double",
-          "required": true
+          "array": true
         }
       ],
       "indexes": []
