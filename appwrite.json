@@ -1,177 +1,135 @@
 {
-  "projectId": "vite-ma-pompe",
-  "projectName": "Vite ma pompe",
-  "functions": [
-    {
-      "$id": "download-data-fn",
-      "name": "DownloadData",
-      "runtime": "deno-1.21",
-      "path": "functions/DownloadData",
-      "entrypoint": "src/mod.ts",
-      "ignore": [],
-      "execute": [],
-      "events": [],
-      "schedule": "0 0 * * *",
-      "timeout": 900
-    }
-  ],
-  "collections": [
-    {
-      "$id": "stations",
-      "$read": ["role:all"],
-      "$write": ["role:all"],
-      "databaseId": "stations-db",
-      "name": "Station",
-      "enabled": true,
-      "permission": "collection",
-      "attributes": [
+    "projectId": "vite-ma-pompe",
+    "projectName": "Vite ma pompe",
+    "functions": [
         {
-          "key": "id",
-          "type": "integer",
-          "required": true
+            "$id": "download-data-fn",
+            "name": "DownloadData",
+            "runtime": "deno-1.21",
+            "path": "functions/DownloadData",
+            "entrypoint": "src/mod.ts",
+            "schedule": "0 0 * * *",
+            "timeout": 900
         },
         {
-          "key": "latitude",
-          "type": "double",
-          "required": true
-        },
-        {
-          "key": "longitude",
-          "type": "double",
-          "required": true
-        },
-        {
-          "key": "cp",
-          "type": "integer",
-          "required": true
-        },
-        {
-          "key": "pop",
-          "type": "string",
-          "required": false,
-          "size": 1
-        },
-        {
-          "key": "adresse",
-          "type": "string",
-          "required": false,
-          "size": 255
-        },
-        {
-          "key": "ville",
-          "type": "string",
-          "required": false,
-          "size": 255
-        },
-        {
-          "key": "horaires",
-          "type": "string",
-          "required": false,
-          "size": 30
-        },
-        {
-          "key": "prix",
-          "type": "string",
-          "required": false,
-          "array": true,
-          "size": 30
+            "$id": "getStationByLocation",
+            "name": "getStationByLocation",
+            "runtime": "deno-1.21",
+            "path": "functions/getStationByLocation",
+            "entrypoint": "src/mod.ts",
+            "schedule": "",
+            "timeout": 15
         }
-      ],
-      "indexes": [
+    ],
+    "collections": [
         {
-          "key": "id",
-          "type": "unique",
-          "attributes": ["id"],
-          "orders": ["ASC"]
+            "$id": "stations",
+            "$read": [
+                "role:all"
+            ],
+            "$write": [
+                "role:all"
+            ],
+            "databaseId": "stations-db",
+            "name": "Station",
+            "enabled": true,
+            "permission": "collection",
+            "attributes": [
+                {
+                    "key": "id",
+                    "type": "integer",
+                    "required": true
+                },
+                {
+                    "key": "latitude",
+                    "type": "double",
+                    "required": true
+                },
+                {
+                    "key": "longitude",
+                    "type": "double",
+                    "required": true
+                },
+                {
+                    "key": "cp",
+                    "type": "integer",
+                    "required": true
+                },
+                {
+                    "key": "pop",
+                    "type": "string",
+                    "required": false,
+                    "size": 1
+                },
+                {
+                    "key": "adresse",
+                    "type": "string",
+                    "required": false,
+                    "size": 255
+                },
+                {
+                    "key": "ville",
+                    "type": "string",
+                    "required": false,
+                    "size": 255
+                },
+                {
+                    "key": "horaires",
+                    "type": "string",
+                    "required": false,
+                    "size": 1073741824
+                },
+                {
+                    "key": "prix",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 1073741824
+                }
+            ],
+            "indexes": [{
+                "key": "idIndex",
+                "type": "key",
+                "status": "available",
+                "attributes": [
+                    "$id"
+                ],
+                "orders": [
+                    "ASC"
+                ]
+            }]
+        },
+        {
+            "$id": "historique",
+            "$read": [
+                "role:all"
+            ],
+            "$write": [
+                "role:all"
+            ],
+            "databaseId": "stations-db",
+            "name": "Historique",
+            "enabled": true,
+            "permission": "collection",
+            "attributes": [
+                {
+                    "key": "stations",
+                    "type": "string",
+                    "size": 30,
+                    "required": true,
+                    "array": true
+                }
+            ],
+            "indexes": [{
+                "key": "createdAtIndex",
+                "type": "key",
+                "attributes": [
+                    "$createdAt"
+                ],
+                "orders": [
+                    "DESC"
+                ]
+            }]
         }
-      ]
-    },
-    {
-      "$id": "horaires",
-      "$read": ["role:all"],
-      "$write": ["role:all"],
-      "databaseId": "stations-db",
-      "name": "Horaires",
-      "enabled": true,
-      "permission": "collection",
-      "attributes": [
-        {
-          "key": "jour",
-          "type": "string",
-          "required": false,
-          "array": true,
-          "size": 30
-        },
-        {
-          "key": "automate2424",
-          "type": "boolean",
-          "required": false
-        }
-      ],
-      "indexes": []
-    },
-    {
-      "$id": "jour",
-      "$read": ["role:all"],
-      "$write": ["role:all"],
-      "databaseId": "stations-db",
-      "name": "Jour",
-      "enabled": true,
-      "permission": "collection",
-      "attributes": [
-        {
-          "key": "id_jour",
-          "type": "integer",
-          "required": true
-        },
-        {
-          "key": "nom",
-          "type": "string",
-          "required": true,
-          "size": 8
-        },
-        {
-          "key": "ferme",
-          "type": "boolean",
-          "required": false
-        }
-      ],
-      "indexes": []
-    },
-    {
-      "$id": "prix",
-      "$read": ["role:all"],
-      "$write": ["role:all"],
-      "databaseId": "stations-db",
-      "name": "Prix",
-      "enabled": true,
-      "permission": "collection",
-      "attributes": [
-        {
-          "key": "id_carburant",
-          "type": "integer",
-          "required": true
-        },
-        {
-          "key": "nom",
-          "type": "string",
-          "required": true,
-          "elements": ["Gazole", "SP95", "E85", "GPLc", "E10", "SP98"],
-          "format": "enum"
-        },
-        {
-          "key": "maj",
-          "type": "string",
-          "required": true,
-          "size": 19
-        },
-        {
-          "key": "valeur",
-          "type": "double",
-          "required": true
-        }
-      ],
-      "indexes": []
-    }
-  ]
+    ]
 }
