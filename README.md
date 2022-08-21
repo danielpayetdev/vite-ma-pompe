@@ -67,9 +67,9 @@
 <details>
   <summary>Server</summary>
   <ul>
+    <li><a href="https://appwrite.io/">appwrite</a></li>
     <li><a href="https://deno.land/">Deno</a></li>
     <li><a href="https://www.typescriptlang.org/">Typescript</a></li>
-    <li><a href="https://honojs.dev/">Hono.js</a></li>
   </ul>
 </details>
 
@@ -86,6 +86,7 @@
 
 - For the server you need to install Deno : [see Deno guide](https://deno.land/manual/getting_started/installation).
 - For the client you need to install Flutter : [see Flutter guide](https://docs.flutter.dev/get-started/install).
+- Docker compose
 
 ### Installation
 
@@ -97,16 +98,23 @@ git clone https://github.com/danielpayetdev/vite-ma-pompe.git
 
 ### Installation - Server
 
-Go to the server directory
+Go to the appwrite directory
 
 ```bash
-cd server
+cd appwrite
 ```
 
 start the server
 
 ```bash
-deno run --allow-all ./src/main.ts
+docker-compose up -d --remove-orphans
+```
+
+_for fresh install only_,
+when containers are up, goto http://localhost:80/v1
+
+```bash
+deno run --allow-all ./init.ts //TODO
 ```
 
 ### Installation - Client
