@@ -15,7 +15,7 @@ export default async function (req: any, res: any) {
   const data = await new DownloadData().download();
 
   if (data) {
-    const connection: PoolClient = (await connect(res))!;
+    const connection: PoolClient = (await connect(req, res))!;
     try {
       const stationId: number[] = [];
       let itemSaved = 0;
