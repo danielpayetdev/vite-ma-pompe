@@ -1,59 +1,19 @@
-name: Publish Docker image to github package
+name: Deploy ViteMaPompe backend
 on:
   release:
     types: [published]
 
 jobs:
-  push_to_registry:
-    name: Push Docker image to Docker Hub
+  deploy_functions:
+    name: Deploy Appwrite function to prod
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-    env:
-      IMAGE_NAME_GCP: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+      - uses: appwrite/setup-for-actions@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to gcloud
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-      - name: Configure Docker for gcloud
-        run: gcloud auth configure-docker --quiet
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            danielpayet/vite-ma-pompe
-            ghcr.io/${{ github.repository }}
-            gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
-          tags: |
-            type=semver,pattern={{version}}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: ./server
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-
-      - name: Deploy docker image Cloud run
-        run: gcloud beta run deploy ${{ secrets.GCP_APP_NAME }} --image $IMAGE_NAME_GCP --execution-environment gen2 --region=europe-west9 --project ${{ secrets.GCP_PROJECT_ID }} && gcloud run services update-traffic vite-ma-pompe --region=europe-west9 --to-latest
+          endpoint: 'https://${{ secrets.PROD_HOSTNAME }}/v1'
+          project: '${{ secrets.PROJECT_ID }}'
+          key: '${{ secrets.APPWRITE_API_KEY }}'
+      - name: Deploy functions
+        run: appwrite deploy function --all

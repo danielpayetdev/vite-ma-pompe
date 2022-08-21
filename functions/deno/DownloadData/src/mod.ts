@@ -1,13 +1,6 @@
-import { Pool, PoolClient } from './deps.ts';
+import { Pool, PoolClient } from "./deps.ts";
 import { DownloadData } from "./download-data.ts";
 import { StationsRepo } from "./stations.repo.ts";
-
-const pgPool = new Pool({
-  hostname: "appwrite-postgres",
-  database: "stations",
-  user: "user",
-  password: "password",
-}, 1);
 
 // deno-lint-ignore no-explicit-any
 export default async function (req: any, res: any) {
@@ -50,8 +43,15 @@ export default async function (req: any, res: any) {
   res.send("ok", 200);
 }
 
-const connect = async (res: { send: (msg: string, code: number) => void }) => {
+// deno-lint-ignore no-explicit-any
+const connect = async (req: any, res: { send: (msg: string, code: number) => void }) => {
   try {
+    const pgPool = new Pool({
+      hostname: "appwrite-postgres",
+      database: "stations",
+      user: req.env["PG_USER"],
+      password: req.env["PG_PASSWORD"],
+    }, 1);
     return await pgPool.connect();
   } catch (e) {
     console.error(e.message);

@@ -1,19 +1,12 @@
-import { Station } from "./type/station.ts";
-import { TypeCarburant } from "./type/type-carburant.ts";
+import { Station } from "../../common/type/interface/station.ts";
 
 const RAYON_TERRE = 6371;
 
 export class FindByLocationProcess {
 
-    constructor(private database: sdk.Database) {}
-
-  public aroundPosition(stations: string[], latitude: number, longitude: number, rayon: number, limit: number, carburant: TypeCarburant): Station[] {
-    const stations = await Promise.all(stationsID.map((station) => database.getDocument(COLLECTION_STATION, station)));
+  public aroundPosition(stations: Station[], latitude: number, longitude: number, rayon: number, limit: number): Station[] {
     const stationsAround: Station[] = [];
     for (const station of stations) {
-      if (carburant && !this.isStationPossedeCarburant(station, carburant)) {
-        continue;
-      }
       if (this.distance(station.latitude, station.longitude, latitude, longitude) <= rayon) {
         stationsAround.push(station);
         limit--;
@@ -23,10 +16,6 @@ export class FindByLocationProcess {
       }
     }
     return stationsAround;
-  }
-
-  private isStationPossedeCarburant(station: Station, carburant: TypeCarburant): boolean {
-    return station.prix?.find((prix) => prix.id_carburant === carburant) !== undefined;
   }
 
   private distance(lat1: number, lon1: number, lat2: number, lon2: number): number {

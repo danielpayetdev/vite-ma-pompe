@@ -6,8 +6,9 @@
             "$id": "download-data-fn",
             "name": "DownloadData",
             "runtime": "deno-1.21",
-            "path": "functions/DownloadData",
-            "entrypoint": "src/mod.ts",
+            "path": "functions/deno",
+            "entrypoint": "DownloadData/src/mod.ts",
+            "ignore": [ "getStationByLocation" ],
             "schedule": "0 0 * * *",
             "timeout": 900
         },
@@ -15,8 +16,9 @@
             "$id": "getStationByLocation",
             "name": "getStationByLocation",
             "runtime": "deno-1.21",
-            "path": "functions/getStationByLocation",
-            "entrypoint": "src/mod.ts",
+            "path": "functions/deno",
+            "entrypoint": "getStationByLocation/src/mod.ts",
+            "ignore": [ "DownloadData" ],
             "schedule": "",
             "timeout": 15
         }
@@ -87,17 +89,19 @@
                     "size": 1073741824
                 }
             ],
-            "indexes": [{
-                "key": "idIndex",
-                "type": "key",
-                "status": "available",
-                "attributes": [
-                    "$id"
-                ],
-                "orders": [
-                    "ASC"
-                ]
-            }]
+            "indexes": [
+                {
+                    "key": "idIndex",
+                    "type": "key",
+                    "status": "available",
+                    "attributes": [
+                        "$id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
         },
         {
             "$id": "historique",
@@ -120,16 +124,18 @@
                     "array": true
                 }
             ],
-            "indexes": [{
-                "key": "createdAtIndex",
-                "type": "key",
-                "attributes": [
-                    "$createdAt"
-                ],
-                "orders": [
-                    "DESC"
-                ]
-            }]
+            "indexes": [
+                {
+                    "key": "createdAtIndex",
+                    "type": "key",
+                    "attributes": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
         }
     ]
 }

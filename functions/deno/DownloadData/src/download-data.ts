@@ -1,5 +1,5 @@
-import { Station } from "./type/interface/station.ts";
-import { StationXML } from "./type/xml/station.ts";
+import { Station } from "../../common/type/interface/station.ts";
+import { StationXML } from "../../common/type/xml/station.ts";
 import { BlobReader, node, parse, ZipReader } from "./deps.ts";
 import { XmlMapper } from "./xml-mapper.ts";
 
@@ -31,8 +31,7 @@ export class DownloadData {
           ),
         ),
     });
-    console.log("Done.");
-    console.timeEnd("Parsing time");
+    console.timeEnd("\nParsing time");
     return this.mapToJson((xml["pdv_liste"] as node)?.["pdv"] as StationXML[]);
   }
 
