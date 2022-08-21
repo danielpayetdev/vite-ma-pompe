@@ -63,6 +63,7 @@ services:
     depends_on:
       - mariadb
       - redis
+      - postgres
 #      - clamav
       - influxdb
     environment:
@@ -609,13 +610,14 @@ services:
     <<: *x-logging
     restart: unless-stopped
     networks:
-      - appwrite
+      - runtimes
     volumes:
       - appwrite-postgres:/var/lib/postgresql/data:rw
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - POSTGRES_USER=${_APP_DB_USER}
       - POSTGRES_PASSWORD=${_APP_DB_PASS}
+      - POSTGRES_DB=stations
 
   redis:
     image: redis:6.2-alpine

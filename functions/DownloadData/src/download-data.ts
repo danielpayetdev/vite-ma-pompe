@@ -7,7 +7,8 @@ import { XmlMapper } from "./xml-mapper.ts";
  * DownloadData is responsible for downloading the data from the server wich come from the French government.
  */
 export class DownloadData {
-  private static readonly URL = "https://donnees.roulez-eco.fr/opendata/instantane";
+  private static readonly URL =
+    "https://donnees.roulez-eco.fr/opendata/instantane";
 
   public async download(): Promise<Station[] | undefined> {
     console.log("Downloading data...");
@@ -20,10 +21,15 @@ export class DownloadData {
       return;
     }
     console.time("Parsing time");
-    console.log("Parsing (it may take time)...");
     const xml = parse(fileData, {
       reviveBooleans: true,
       reviveNumbers: true,
+      progress: (bytes) =>
+        Deno.stdout.writeSync(
+          new TextEncoder().encode(
+            `Parsing document: ${(100 * bytes / fileData.length).toFixed(2)}%\r`,
+          ),
+        ),
     });
     console.log("Done.");
     console.timeEnd("Parsing time");
@@ -43,7 +49,8 @@ export class DownloadData {
   private async readZip(zipFileBlob: Blob): Promise<string> {
     const zipFileReader = new BlobReader(zipFileBlob);
     const helloWorldWriter = new TransformStream();
-    const helloWorldTextPromise = new Response(helloWorldWriter.readable).arrayBuffer();
+    const helloWorldTextPromise = new Response(helloWorldWriter.readable)
+      .arrayBuffer();
     const zipReader = new ZipReader(zipFileReader);
     const firstEntry = (await zipReader.getEntries()).shift();
 

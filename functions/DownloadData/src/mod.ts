@@ -1,49 +1,61 @@
-import { sdk } from "./deps.ts";
+import { Pool, PoolClient } from './deps.ts';
 import { DownloadData } from "./download-data.ts";
+import { StationsRepo } from "./stations.repo.ts";
 
-const DATABASE = "stations-db";
-const COLLECTION_STATION = "stations";
-const COLLECTION_HISTORIQUE = "historique";
+const pgPool = new Pool({
+  hostname: "appwrite-postgres",
+  database: "stations",
+  user: "user",
+  password: "password",
+}, 1);
 
 // deno-lint-ignore no-explicit-any
 export default async function (req: any, res: any) {
-  if (!req.env["FORCE_HTTP"] && req.env["APPWRITE_FUNCTION_TRIGGER"] !== "schedule") {
+  if (
+    !req.env["FORCE_HTTP"] &&
+    req.env["APPWRITE_FUNCTION_TRIGGER"] !== "schedule"
+  ) {
     res.send("Not a schedule trigger", 403);
     return;
-  }
-
-  const client = new sdk.Client();
-  const database = new sdk.Databases(client, DATABASE);
-  if (!req.env["APPWRITE_FUNCTION_ENDPOINT"] || !req.env["APPWRITE_FUNCTION_API_KEY"]) {
-    console.warn("Environment variables are not set. Function cannot use Appwrite SDK.");
-  } else {
-    client
-      .setEndpoint(req.env["APPWRITE_FUNCTION_ENDPOINT"] as string)
-      .setProject(req.env["APPWRITE_FUNCTION_PROJECT_ID"] as string)
-      .setKey(req.env["APPWRITE_FUNCTION_API_KEY"] as string);
   }
 
   const data = await new DownloadData().download();
 
   if (data) {
+    const connection: PoolClient = (await connect(res))!;
     try {
-      const stationsDoc = await Promise.all(
-        data.map(async (station) => {
-          const prix = station.prix?.map((p) => JSON.stringify(p));
-          const horaires = JSON.stringify(station.horaires);
-          return await database.createDocument(COLLECTION_STATION, "unique()", { ...station, horaires, prix });
-        })
+      const stationId: number[] = [];
+      let itemSaved = 0;
+      while (itemSaved <= data.length) {
+        const query = await connection.queryObject<{ _id: number }>(
+          StationsRepo.insertAll(data.slice(itemSaved, itemSaved + 100)),
+        );
+        stationId.push(...query.rows.map((o) => o._id));
+        itemSaved = itemSaved + 100;
+      }
+      await connection.queryObject(
+        StationsRepo.deleteAll(stationId),
       );
-      await database.createDocument(COLLECTION_HISTORIQUE, "unique()", { stations: stationsDoc.map((s) => s.$id) });
     } catch (e) {
       console.error(e.message);
       res.send("Error while saving data: " + e.message, 500);
       return;
+    } finally {
+      connection.release();
     }
   } else {
     res.send("Error while downloading data", 500);
     return;
   }
-
   res.send("ok", 200);
 }
+
+const connect = async (res: { send: (msg: string, code: number) => void }) => {
+  try {
+    return await pgPool.connect();
+  } catch (e) {
+    console.error(e.message);
+    res.send("Error while saving data: " + e.message, 500);
+    return undefined;
+  }
+};

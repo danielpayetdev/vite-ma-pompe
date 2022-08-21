@@ -1,4 +1,5 @@
-export enum Presence {
-  ROUTE = "R",
-  AUTOROUTE = "A",
-}
+/**
+ * R: route,
+ * A: autoroute
+ */
+export type Presence = "R" | "A";

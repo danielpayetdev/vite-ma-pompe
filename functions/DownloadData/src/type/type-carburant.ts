@@ -7,11 +7,4 @@ export enum TypeCarburant {
   SP98 = 6,
 }
 
-export enum NomCarburant {
-  Gazole = "Gazole",
-  SP95 = "SP95",
-  E85 = "E85",
-  GPLc = "GPLc",
-  E10 = "E10",
-  SP98 = "SP98",
-}
+export type NomCarburant = "Gazole" | "SP95" | "E85" | "GPLc" | "E10" | "SP98";
