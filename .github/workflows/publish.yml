@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-      - uses: appwrite/setup-for-actions@v1
+      - uses: appwrite/setup-for-actions@4b9941895ac75e3920788d2df96539e6b54f8bb7
         with:
           endpoint: 'https://${{ secrets.PROD_HOSTNAME }}/v1'
           project: '${{ secrets.PROJECT_ID }}'
