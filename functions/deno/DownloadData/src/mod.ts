@@ -1,6 +1,6 @@
+import { StationsRepo } from "../../common/repository/stations.repo.ts";
 import { Pool, PoolClient } from "./deps.ts";
 import { DownloadData } from "./download-data.ts";
-import { StationsRepo } from "./stations.repo.ts";
 
 // deno-lint-ignore no-explicit-any
 export default async function (req: any, res: any) {

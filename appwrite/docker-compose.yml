@@ -47,11 +47,11 @@ services:
       - traefik.http.services.appwrite_api.loadbalancer.server.port=80
       #http
       - traefik.http.routers.appwrite_api_http.entrypoints=appwrite_web
-      - traefik.http.routers.appwrite_api_http.rule=PathPrefix(`/`)
+      - traefik.http.routers.appwrite_api_http.rule=Host(`api.vitemapompe.fr`) && PathPrefix(`/`)
       - traefik.http.routers.appwrite_api_http.service=appwrite_api
       # https
       - traefik.http.routers.appwrite_api_https.entrypoints=appwrite_websecure
-      - traefik.http.routers.appwrite_api_https.rule=PathPrefix(`/`)
+      - traefik.http.routers.appwrite_api_https.rule=Host(`api.vitemapompe.fr`) && PathPrefix(`/`)
       - traefik.http.routers.appwrite_api_https.service=appwrite_api
       - traefik.http.routers.appwrite_api_https.tls=true
     volumes:
@@ -614,6 +614,8 @@ services:
     volumes:
       - appwrite-postgres:/var/lib/postgresql/data:rw
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports: 
+      - 5432:5432
     environment:
       - POSTGRES_USER=${_APP_DB_USER}
       - POSTGRES_PASSWORD=${_APP_DB_PASS}
@@ -663,6 +665,34 @@ services:
     environment: 
       - _APP_INFLUXDB_HOST
       - _APP_INFLUXDB_PORT
+
+  webapp:
+    image: wickerlabs/maintenance
+    container_name: maintenance-page
+    <<: *x-logging
+    restart: unless-stopped
+    environment: 
+     - TEAM_NAME=L'équipe ViteMaPompe
+     - TITLE=Trop tôt...
+     - HEADLINE=Oops! 😖😱
+     - THEME=Dark
+     - MESSAGE=Il est encore trop tôt pour être ici 🙈! Revenez plus tard ! 💙
+    networks:
+      - appwrite
+    labels:
+      - traefik.enable=true
+      - traefik.constraint-label-stack=appwrite
+      - traefik.docker.network=appwrite
+      - traefik.http.services.vitemapompe.loadbalancer.server.port=8080
+      # http
+      - traefik.http.routers.vitemapompe-wa_unsecure.entrypoints=appwrite_web
+      - traefik.http.routers.vitemapompe-wa_unsecure.rule=Host(`vitemapompe.fr`)
+      - traefik.http.routers.vitemapompe-wa_unsecure.service=vitemapompe
+      # https
+      - traefik.http.routers.vitemapompe-wa.entrypoints=appwrite_websecure
+      - traefik.http.routers.vitemapompe-wa.rule=Host(`vitemapompe.fr`)
+      - traefik.http.routers.vitemapompe-wa.service=vitemapompe
+      - traefik.http.routers.vitemapompe-wa.tls=true
 
 networks:
   gateway:
