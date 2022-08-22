@@ -37,7 +37,7 @@ export class StationsRepo {
       FROM station as s
       cross join jsonb_array_elements(prix) as elem
       WHERE s.id = ${id}
-      AND elem->'id_carburant' = ${fuel};
+      AND elem->'id_carburant' = '${fuel}';
     `;
   }
 
@@ -46,7 +46,7 @@ export class StationsRepo {
       SELECT ${StationsRepo.COLUMNS.map((s) => "s." + s).join(", ")}
       FROM station as s
       cross join jsonb_array_elements(prix) as elem
-      WHERE elem->'id_carburant' = ${fuel};
+      WHERE elem->'id_carburant' = '${fuel}';
     `;
   }
 

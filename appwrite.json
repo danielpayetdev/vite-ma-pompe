@@ -8,7 +8,10 @@
             "runtime": "deno-1.21",
             "path": "functions/deno",
             "entrypoint": "DownloadData/src/mod.ts",
-            "ignore": [ "getStationByLocation" ],
+            "ignore": [
+                "getStationByLocation",
+                "getFuelPrice"
+            ],
             "schedule": "0 0 * * *",
             "timeout": 900
         },
@@ -18,7 +21,23 @@
             "runtime": "deno-1.21",
             "path": "functions/deno",
             "entrypoint": "getStationByLocation/src/mod.ts",
-            "ignore": [ "DownloadData" ],
+            "ignore": [
+                "DownloadData",
+                "getFuelPrice"
+            ],
+            "schedule": "",
+            "timeout": 15
+        },
+        {
+            "$id": "getFuelPrice",
+            "name": "getFuelPrice",
+            "runtime": "deno-1.21",
+            "path": "functions/deno",
+            "entrypoint": "getFuelPrice/src/mod.ts",
+            "ignore": [
+                "DownloadData",
+                "getStationByLocation"
+            ],
             "schedule": "",
             "timeout": 15
         }
