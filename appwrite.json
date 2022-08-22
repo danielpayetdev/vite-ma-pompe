@@ -1,0 +1,141 @@
+{
+    "projectId": "vite-ma-pompe",
+    "projectName": "Vite ma pompe",
+    "functions": [
+        {
+            "$id": "download-data-fn",
+            "name": "DownloadData",
+            "runtime": "deno-1.21",
+            "path": "functions/deno",
+            "entrypoint": "DownloadData/src/mod.ts",
+            "ignore": [ "getStationByLocation" ],
+            "schedule": "0 0 * * *",
+            "timeout": 900
+        },
+        {
+            "$id": "getStationByLocation",
+            "name": "getStationByLocation",
+            "runtime": "deno-1.21",
+            "path": "functions/deno",
+            "entrypoint": "getStationByLocation/src/mod.ts",
+            "ignore": [ "DownloadData" ],
+            "schedule": "",
+            "timeout": 15
+        }
+    ],
+    "collections": [
+        {
+            "$id": "stations",
+            "$read": [
+                "role:all"
+            ],
+            "$write": [
+                "role:all"
+            ],
+            "databaseId": "stations-db",
+            "name": "Station",
+            "enabled": true,
+            "permission": "collection",
+            "attributes": [
+                {
+                    "key": "id",
+                    "type": "integer",
+                    "required": true
+                },
+                {
+                    "key": "latitude",
+                    "type": "double",
+                    "required": true
+                },
+                {
+                    "key": "longitude",
+                    "type": "double",
+                    "required": true
+                },
+                {
+                    "key": "cp",
+                    "type": "integer",
+                    "required": true
+                },
+                {
+                    "key": "pop",
+                    "type": "string",
+                    "required": false,
+                    "size": 1
+                },
+                {
+                    "key": "adresse",
+                    "type": "string",
+                    "required": false,
+                    "size": 255
+                },
+                {
+                    "key": "ville",
+                    "type": "string",
+                    "required": false,
+                    "size": 255
+                },
+                {
+                    "key": "horaires",
+                    "type": "string",
+                    "required": false,
+                    "size": 1073741824
+                },
+                {
+                    "key": "prix",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 1073741824
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idIndex",
+                    "type": "key",
+                    "status": "available",
+                    "attributes": [
+                        "$id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "historique",
+            "$read": [
+                "role:all"
+            ],
+            "$write": [
+                "role:all"
+            ],
+            "databaseId": "stations-db",
+            "name": "Historique",
+            "enabled": true,
+            "permission": "collection",
+            "attributes": [
+                {
+                    "key": "stations",
+                    "type": "string",
+                    "size": 30,
+                    "required": true,
+                    "array": true
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "createdAtIndex",
+                    "type": "key",
+                    "attributes": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        }
+    ]
+}
