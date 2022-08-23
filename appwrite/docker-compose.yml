@@ -694,6 +694,22 @@ services:
       - traefik.http.routers.vitemapompe-wa.service=vitemapompe
       - traefik.http.routers.vitemapompe-wa.tls=true
 
+  ors:
+    image: openrouteservice/openrouteservice:latest
+    container_name: ors
+    ports:
+     - 8080:8080
+    volumes:
+     - ors-graphs:/ors-core/data/graphs
+     - ors-elevation-cache:/ors-core/data/elevation_cache
+     - ors-logs:/var/log/ors
+     - ors-tomcat-logs:/usr/local/tomcat/logs
+     - ors-conf:/ors-conf
+    environment:
+     - BUILD_GRAPHS=false
+     - JAVA_OPTS=-Djava.awt.headless=true -server -XX:TargetSurvivorRatio=75 -XX:SurvivorRatio=64 -XX:MaxTenuringThreshold=3 -XX:+UseG1GC -XX:+ScavengeBeforeFullGC -XX:ParallelGCThreads=4 -Xms1g -Xmx2g
+     - CATALINA_OPTS=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9001 -Dcom.sun.management.jmxremote.rmi.port=9001 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost
+
 networks:
   gateway:
   appwrite:
@@ -711,3 +727,8 @@ volumes:
   appwrite-influxdb:
   appwrite-config:
   appwrite-executor:
+  ors-graphs:
+  ors-elevation-cache:
+  ors-logs:
+  ors-tomcat-logs:
+  ors-conf:
