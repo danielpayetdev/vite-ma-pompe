@@ -8,4 +8,4 @@ export {
   BlobReader,
   ZipReader,
 } from "https://deno.land/x/zipjs@v2.6.14/index.js";
-export { Pool, PoolClient } from "https://deno.land/x/postgres@v0.16.1/mod.ts";
+export { PoolClient } from "https://deno.land/x/postgres@v0.16.1/mod.ts";
