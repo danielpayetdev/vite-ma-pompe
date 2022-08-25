@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -61,14 +62,24 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                       ),
                       MarkerLayerOptions(
+                        rebuild: Geolocator.getPositionStream(),
                         markers: [
                           Marker(
-                              point: LatLng(snapshot.data?.latitude ?? 0,
-                                  snapshot.data?.longitude ?? 0),
-                              width: 80,
-                              height: 80,
-                              builder: (context) =>
-                                  const Icon(Icons.navigation)),
+                            point: LatLng(snapshot.data?.latitude ?? 0,
+                                snapshot.data?.longitude ?? 0),
+                            width: 80,
+                            height: 80,
+                            builder: (context) =>
+                                UserMarker(angle: snapshot.data?.heading ?? 0),
+                          ),
+                          Marker(
+                            point: LatLng(snapshot.data?.latitude ?? 0,
+                                snapshot.data?.longitude ?? 0),
+                            width: 80,
+                            height: 80,
+                            rotate: true,
+                            builder: (context) => const StationMarker(),
+                          ),
                         ],
                       ),
                     ],
@@ -76,5 +87,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 : const SizedBox();
           }),
     );
+  }
+}
+
+class UserMarker extends StatelessWidget {
+  final double angle;
+
+  const UserMarker({
+    super.key,
+    required final this.angle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(angle: angle, child: const Icon(Icons.navigation));
+  }
+}
+
+class StationMarker extends StatelessWidget {
+  const StationMarker({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(Icons.local_gas_station);
   }
 }
