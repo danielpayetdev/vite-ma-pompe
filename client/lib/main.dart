@@ -37,12 +37,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<Position>(
-          future: Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation),
+          future: Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.bestForNavigation),
           builder: (context, snapshot) {
             return snapshot.hasData
                 ? FlutterMap(
                     options: MapOptions(
-                      center: LatLng(snapshot.data?.latitude ?? 0, snapshot.data?.longitude ?? 0),
+                      center: LatLng(snapshot.data?.latitude ?? 0,
+                          snapshot.data?.longitude ?? 0),
                       zoom: 16,
                       maxBounds: LatLngBounds(
                         LatLng(50.89, -2.00),
@@ -51,16 +53,22 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     layers: [
                       TileLayerOptions(
-                        urlTemplate: "https://api.mapbox.com/styles/v1/danielpayet974/cl76it7vn003k14o0xg952ieu/tiles/512/{z}/{x}/{y}@2x?access_token={access_token}",
-                        additionalOptions: {"access_token": "pk.eyJ1IjoiZGFuaWVscGF5ZXQ5NzQiLCJhIjoiY2w3Nmlsem5iMDZhbjNwcGJma3FldnZ4aiJ9.ZK7lw66JWY__UzvpSX92GQ"},
+                        urlTemplate:
+                            "https://api.mapbox.com/styles/v1/danielpayet974/cl76it7vn003k14o0xg952ieu/tiles/512/{z}/{x}/{y}@2x?access_token={access_token}",
+                        additionalOptions: {
+                          "access_token":
+                              "pk.eyJ1IjoiZGFuaWVscGF5ZXQ5NzQiLCJhIjoiY2w3Nmlsem5iMDZhbjNwcGJma3FldnZ4aiJ9.ZK7lw66JWY__UzvpSX92GQ"
+                        },
                       ),
                       MarkerLayerOptions(
                         markers: [
                           Marker(
-                              point: LatLng(snapshot.data?.latitude ?? 0, snapshot.data?.longitude ?? 0),
+                              point: LatLng(snapshot.data?.latitude ?? 0,
+                                  snapshot.data?.longitude ?? 0),
                               width: 80,
                               height: 80,
-                              builder: (context) => const Icon(Icons.directions_car)),
+                              builder: (context) =>
+                                  const Icon(Icons.navigation)),
                         ],
                       ),
                     ],
