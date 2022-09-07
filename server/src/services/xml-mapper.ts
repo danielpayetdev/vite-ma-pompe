@@ -1,5 +1,5 @@
-import { Horaire, Jour, Prix, Station } from "../../common/type/interface/station.ts";
-import { StationXML, HoraireXML, JourXML, PrixXML } from "../../common/type/xml/station.ts";
+import { Horaire, Jour, Prix, Station } from "../common/type/interface/station.ts";
+import { StationXML, HoraireXML, JourXML, PrixXML } from "../common/type/xml/station.ts";
 
 /**
  * XmlMapper is responsible for mapping the XML data to the Station type.

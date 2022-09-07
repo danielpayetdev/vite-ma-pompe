@@ -1,4 +1,4 @@
-import { Station } from "../../common/type/interface/station.ts";
+import { Station } from "../common/type/interface/station.ts";
 
 const RAYON_TERRE = 6371;
 

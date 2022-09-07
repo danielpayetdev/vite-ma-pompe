@@ -6,6 +6,10 @@ export { default as os } from "https://deno.land/x/dos@v0.1.0/mod.ts";
 export { unZipFromURL } from "https://deno.land/x/zip@v1.1.0/mod.ts";
 export { parse } from "https://deno.land/x/xml@2.0.4/mod.ts";
 export type { document, node } from "https://deno.land/x/xml@2.0.4/utils/types.ts";
-export { hourly } from "https://deno.land/x/deno_cron@v1.0.0/cron.ts";
 export { Bootstrapped, bootstrap, Injectable } from "./di/mod.ts";
-export * as log from "https://deno.land/std@0.152.0/log/mod.ts";
+export {
+  BlobReader,
+  ZipReader,
+} from "https://deno.land/x/zipjs@v2.6.14/index.js";
+export { PoolClient } from "https://deno.land/x/postgres@v0.16.1/mod.ts";
+export { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";

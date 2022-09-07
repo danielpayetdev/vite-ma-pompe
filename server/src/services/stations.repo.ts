@@ -1,4 +1,4 @@
-import { Station } from "../../common/type/interface/station.ts";
+import { Station } from "../common/type/interface/station.ts";
 
 export class StationsRepo {
   private static TABLE = "station";
