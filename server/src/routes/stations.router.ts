@@ -1,5 +1,5 @@
 import { Context, Hono, Injectable } from "../deps.ts";
-import { TypeCarburant } from "../type/type-carburant.ts";
+import { TypeCarburant } from "../common/type/type-carburant.ts";
 import { StationService } from "../services/station.service.ts";
 
 /**
@@ -7,10 +7,7 @@ import { StationService } from "../services/station.service.ts";
  */
 @Injectable()
 export class StationRouter {
-
-  constructor(
-    private stationService: StationService
-  ) {}
+  constructor(private stationService: StationService) {}
 
   getRoutes(): Hono {
     const station = new Hono();
@@ -22,11 +19,19 @@ export class StationRouter {
     });
 
     station.get("", async (c: Context) => {
-      const { lat, long, r, limit, fuel } = c.req.query();
-      if(lat === undefined || long === undefined) {
-        return c.body("Latitude or longitude aren't set.", 400);
+      const { latitude, longitude, rayon, limit, fuel } = c.req.query();
+      if (
+        latitude === undefined || longitude === undefined || fuel === undefined
+      ) {
+        return c.body("Fuel, latitude or longitude aren't set.", 400);
       }
-      const stations = await this.stationService.aroundPosition(+lat, +long, +r ?? 10, +limit, +fuel);
+      const stations = await this.stationService.aroundPosition(
+        +latitude,
+        +longitude,
+        +rayon,
+        +limit,
+        +fuel,
+      );
       return stations ? c.json({ stations }) : c.notFound();
     });
 

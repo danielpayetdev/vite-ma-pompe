@@ -1,80 +1,40 @@
-import { Database } from "./database.ts";
-import { Injectable } from "../deps.ts";
-import { TypeCarburant } from "../type/type-carburant.ts";
-import { Station } from "../type/interface/station.ts";
-
-const RAYON_TERRE = 6371;
+import { Injectable, PoolClient } from "../deps.ts";
+import { TypeCarburant } from "../common/type/type-carburant.ts";
+import { Station } from "../common/type/interface/station.ts";
+import { connect } from "../common/database/database.ts";
+import { StationsRepo } from "./stations.repo.ts";
+import { FindByLocationProcess } from "./find-by-location.ts";
 
 /**
  * StationService is responsible for the station data.
  */
 @Injectable()
 export class StationService {
-  constructor(private database: Database) {}
-
-  public async getPrice(_id: number, _typeCarburant: TypeCarburant) {
-    const stations = await this.database.getStations();
-    return stations.find((s) => s.id === _id)?.prix?.find((p) =>
-      p.id_carburant === _typeCarburant
-    )?.valeur;
+  public async getPrice(station: number, fuel: TypeCarburant) {
+    const connection: PoolClient = (await connect())!;
+    const price = (await connection.queryObject<Station>(
+      StationsRepo.getFuelPriceofStation(station, fuel),
+    )).rows;
+    return price[0];
   }
 
   public async aroundPosition(
     latitude: number,
     longitude: number,
-    rayon: number,
-    limit: number,
-    carburant: TypeCarburant,
+    rayon = 10,
+    limit = 50,
+    fuel: TypeCarburant,
   ): Promise<Station[]> {
-    const stations = await this.database.getStations();
-    const stationsAround: Station[] = [];
-    for (const station of stations) {
-      if (carburant && !this.isStationPossedeCarburant(station, carburant)) {
-        continue;
-      }
-      if (
-        this.distance(
-          station.latitude,
-          station.longitude,
-          latitude,
-          longitude,
-        ) <= rayon
-      ) {
-        stationsAround.push(station);
-        limit--;
-      }
-      if (limit == 0) {
-        break;
-      }
-    }
-    return stationsAround;
-  }
-
-  private isStationPossedeCarburant(
-    station: Station,
-    carburant: TypeCarburant,
-  ): boolean {
-    return station.prix?.find((prix) => prix.id_carburant === carburant) !==
-      undefined;
-  }
-
-  private distance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-  ): number {
-    lat1 = lat1 * (Math.PI / 180);
-    lat2 = lat2 * (Math.PI / 180);
-    lon1 = lon1 * (Math.PI / 180);
-    lon2 = lon2 * (Math.PI / 180);
-    const a = this.hav(lat2, lat1) +
-      Math.cos(lat1) * Math.cos(lat2) * this.hav(lon2, lon1);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return RAYON_TERRE * c;
-  }
-
-  private hav(a: number, b: number): number {
-    return Math.sin((a - b) / 2) ** 2;
+    const connection: PoolClient = (await connect())!;
+    const stations =
+      (await connection.queryObject<Station>(StationsRepo.getAllByFuel(fuel)))
+        .rows;
+    return new FindByLocationProcess().aroundPosition(
+      stations,
+      latitude,
+      longitude,
+      rayon,
+      limit,
+    );
   }
 }
