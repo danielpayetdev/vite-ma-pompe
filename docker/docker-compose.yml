@@ -47,8 +47,42 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data:rw
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports: 
-      - 5432:5432
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+  backend: 
+    # image: ghcr.io/danielpayetdev/vite-ma-pompe-server:latest
+    image: vmp
+    container_name: backend-vite-ma-pompe
+    restart: unless-stopped
+    networks:
+      - vitemapompe
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=vitemapompe
+      - traefik.http.services.vitemapompe.loadbalancer.server.port=1993
+      # http
+      - traefik.http.routers.vitemapompe-wa_unsecure.entrypoints=vitemapompe_web
+      - traefik.http.routers.vitemapompe-wa_unsecure.rule=Host(`vitemapompe.fr`) && Path(`/api`)
+      - traefik.http.routers.vitemapompe-wa_unsecure.service=vitemapompe
+      # https
+      - traefik.http.routers.vitemapompe-wa.entrypoints=vitemapompe_websecure
+      - traefik.http.routers.vitemapompe-wa.rule=Host(`vitemapompe.fr`) && Path(`/api`)
+      - traefik.http.routers.vitemapompe-wa.service=vitemapompe
+      - traefik.http.routers.vitemapompe-wa.tls=true
+      - traefik.http.routers.vitemapompe-wa.tls.certresolver=myresolver
+  cron: 
+    # image: ghcr.io/danielpayetdev/vite-ma-pompe-cron:latest
+    image: cron
+    container_name: cron-vite-ma-pompe
+    restart: unless-stopped
+    networks:
+      - vitemapompe
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
@@ -72,7 +106,7 @@ services:
       - traefik.http.services.vitemapompe.loadbalancer.server.port=8080
       # http
       - traefik.http.routers.vitemapompe-wa_unsecure.entrypoints=vitemapompe_web
-      - traefik.http.routers.vitemapompe-wa_unsecure.rule=Host(`vitemapompe.fr`)
+      - traefik.http.routers.vitemapompe-wa_unsecure.rule=Host(`vitemapompe.fr`) && Path(`/`)
       - traefik.http.routers.vitemapompe-wa_unsecure.service=vitemapompe
       # https
       - traefik.http.routers.vitemapompe-wa.entrypoints=vitemapompe_websecure

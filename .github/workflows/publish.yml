@@ -1,19 +1,56 @@
-name: Deploy ViteMaPompe backend
+name: Publish server image to github package
 on:
   release:
     types: [published]
 
 jobs:
-  deploy_functions:
-    name: Deploy Appwrite function to prod
+  push_to_registry:
+    name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-      - uses: appwrite/setup-for-actions@4b9941895ac75e3920788d2df96539e6b54f8bb7
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
         with:
-          endpoint: 'https://${{ secrets.PROD_HOSTNAME }}/v1'
-          project: '${{ secrets.PROJECT_ID }}'
-          key: '${{ secrets.APPWRITE_API_KEY }}'
-      - name: Deploy functions
-        run: appwrite deploy function --all
+        
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for server image
+        id: meta-server
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}-server
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./server
+          push: true
+          tags: ${{ steps.meta-server.outputs.tags }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta-cron
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}-cron
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./server
+          file: Dockerfile-cron
+          push: true
+          tags: ${{ steps.meta-cron.outputs.tags }}
