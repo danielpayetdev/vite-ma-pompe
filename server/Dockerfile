@@ -10,4 +10,4 @@ USER deno
 ADD ./src .
 COPY ./deno.json .
 RUN deno cache main.ts
-CMD [ "run", "--allow-env", "--allow-read", "--allow-net", "--unstable", "main.ts" ]
+CMD [ "run", "--allow-env", "--allow-read", "--allow-net", "main.ts" ]

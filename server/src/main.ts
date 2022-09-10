@@ -1,10 +1,5 @@
-import { bootstrap, Bootstrapped, config, Hono } from "./deps.ts";
+import { bootstrap, Bootstrapped, config, Hono, serve } from "./deps.ts";
 import { AppRouter } from "./routes/app-router.ts";
-
-Deno.addSignalListener("SIGTERM", () => {
-  console.log("Exiting...");
-  Deno.exit();
-});
 
 /**
  * Main is the entry point of the application.
@@ -22,7 +17,8 @@ export class Main {
     console.log("Starting server...");
     config({ export: true });
     const port = +(Deno.env.get("PORT") ?? 3000);
-    return Deno.serve({
+    return serve(this.app.fetch, 
+      {
       port,
       onListen({ port, hostname }) {
         console.log(
@@ -31,7 +27,7 @@ export class Main {
           }:${port}`,
         );
       },
-    }, this.app.fetch);
+    }, );
   }
 }
 
