@@ -21,7 +21,6 @@ export class Main {
   public startApp(): Promise<void> {
     console.log("Starting server...");
     config({ export: true });
-    console.log(Deno.env.get("PORT"));
     const port = +(Deno.env.get("PORT") ?? 3000);
     return Deno.serve({
       port,

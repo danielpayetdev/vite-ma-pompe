@@ -10,4 +10,4 @@ RUN echo "0 */3 * * * deno run --allow-env --allow-read --allow-net /app/populat
 WORKDIR /app
 ADD ./src .
 RUN deno cache populate-database.ts
-CMD ["deno", "run", "--allow-env", "--allow-read", "--allow-net", "/app/populate-database.ts", "&&", "crond", "-f", "-l0"]
+CMD ["crond", "-f", "-l0"]

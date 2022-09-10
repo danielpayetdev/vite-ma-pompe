@@ -25,12 +25,9 @@ if (data) {
     console.log("\nDone.");
   } catch (e) {
     console.error(e.message);
-    Deno.exit(1);
   } finally {
     connection.release();
   }
 } else {
   console.log("Error while downloading data");
 }
-
-Deno.exit();
