@@ -1,0 +1,14 @@
+FROM denoland/deno:alpine-1.25.1
+
+ENV POSTGRES_USER \
+    POSTGRES_PASSWORD \
+    POSTGRES_DB \
+    POSTGRES_HOSTNAME
+
+RUN echo "0 */3 * * * deno run --allow-env --allow-read --allow-net /app/populate-database.ts" >> /etc/crontabs/root
+RUN echo "@reboot deno run --allow-env --allow-read --allow-net /app/populate-database.ts" >> /etc/crontabs/root
+
+WORKDIR /app
+ADD ./src .
+RUN deno cache populate-database.ts
+CMD ["crond", "-f", "-l0"]

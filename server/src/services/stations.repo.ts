@@ -1,4 +1,4 @@
-import { Station } from "../../common/type/interface/station.ts";
+import { Station } from "../common/type/interface/station.ts";
 
 export class StationsRepo {
   private static TABLE = "station";
@@ -29,6 +29,25 @@ export class StationsRepo {
     return `DELETE FROM ${StationsRepo.TABLE} WHERE _id NOT IN (${
       stations.join(",")
     })`;
+  }
+
+  public static getFuelPriceofStation(id: number, fuel: number): string {
+    return `
+      SELECT elem->'valeur' as prix
+      FROM station as s
+      cross join jsonb_array_elements(prix) as elem
+      WHERE s.id = ${id}
+      AND elem->'id_carburant' = '${fuel}';
+    `;
+  }
+
+  public static getAllByFuel(fuel: number): string {
+    return `
+      SELECT ${StationsRepo.COLUMNS.map((s) => "s." + s).join(", ")}
+      FROM station as s
+      cross join jsonb_array_elements(prix) as elem
+      WHERE elem->'id_carburant' = '${fuel}';
+    `;
   }
 
   private static getInsertValueString(station: Station): string {

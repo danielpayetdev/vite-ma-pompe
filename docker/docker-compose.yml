@@ -1,0 +1,141 @@
+x-logging: &x-logging
+  logging:
+    driver: 'json-file'
+    options:
+      max-file: '5'
+      max-size: '10m'
+version: '3'
+
+services:
+  traefik:
+    image: traefik:2.7
+    container_name: traefik
+    <<: *x-logging
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.vitemapompe_web.address=:80
+      - --entrypoints.vitemapompe_web.http.redirections.entryPoint.to=vitemapompe_websecure
+      - --entrypoints.vitemapompe_websecure.address=:443
+      - --certificatesresolvers.myresolver.acme.dnschallenge=true
+      - --certificatesresolvers.myresolver.acme.dnschallenge.provider=digitalocean
+      - --certificatesresolvers.myresolver.acme.dnschallenge.delaybeforecheck=0
+      - --certificatesresolvers.myresolver.acme.email=danielpayet.dev@gmail.com
+      - --certificatesresolvers.myresolver.acme.storage=/cert/acme.json
+      - --certificatesresolvers.myresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - certificates-traefik:/cert
+    depends_on:
+      - postgres
+    networks:
+      - gateway
+      - vitemapompe
+    environment:
+      - DO_AUTH_TOKEN
+  postgres:
+    image: postgres:14.5
+    container_name: postgres
+    <<: *x-logging
+    restart: unless-stopped
+    networks:
+      - vitemapompe
+    volumes:
+      - postgres:/var/lib/postgresql/data:rw
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+  backend: 
+    image: ghcr.io/danielpayetdev/vite-ma-pompe-server:latest
+    container_name: backend-vite-ma-pompe
+    restart: unless-stopped
+    networks:
+      - vitemapompe
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=vitemapompe
+      - traefik.http.services.vitemapompe.loadbalancer.server.port=1993
+      # http
+      - traefik.http.routers.vitemapompe-wa_unsecure.entrypoints=vitemapompe_web
+      - traefik.http.routers.vitemapompe-wa_unsecure.rule=Host(`vitemapompe.fr`) && Path(`/api`)
+      - traefik.http.routers.vitemapompe-wa_unsecure.service=vitemapompe
+      # https
+      - traefik.http.routers.vitemapompe-wa.entrypoints=vitemapompe_websecure
+      - traefik.http.routers.vitemapompe-wa.rule=Host(`vitemapompe.fr`) && Path(`/api`)
+      - traefik.http.routers.vitemapompe-wa.service=vitemapompe
+      - traefik.http.routers.vitemapompe-wa.tls=true
+      - traefik.http.routers.vitemapompe-wa.tls.certresolver=myresolver
+  cron: 
+    image: ghcr.io/danielpayetdev/vite-ma-pompe-cron:latest
+    container_name: cron-vite-ma-pompe
+    restart: unless-stopped
+    networks:
+      - vitemapompe
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+  webapp:
+    image: wickerlabs/maintenance
+    container_name: maintenance-page
+    <<: *x-logging
+    restart: unless-stopped
+    environment: 
+     - TEAM_NAME=L'équipe ViteMaPompe
+     - TITLE=Trop tôt...
+     - HEADLINE=Oops! 😖😱
+     - THEME=Dark
+     - MESSAGE=Il est encore trop tôt pour être ici 🙈! Revenez plus tard ! 💙
+    networks:
+      - vitemapompe
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=vitemapompe
+      - traefik.http.services.vitemapompe.loadbalancer.server.port=8080
+      # http
+      - traefik.http.routers.vitemapompe-wa_unsecure.entrypoints=vitemapompe_web
+      - traefik.http.routers.vitemapompe-wa_unsecure.rule=Host(`vitemapompe.fr`) && Path(`/`)
+      - traefik.http.routers.vitemapompe-wa_unsecure.service=vitemapompe
+      # https
+      - traefik.http.routers.vitemapompe-wa.entrypoints=vitemapompe_websecure
+      - traefik.http.routers.vitemapompe-wa.rule=Host(`vitemapompe.fr`) && Path(`/`)
+      - traefik.http.routers.vitemapompe-wa.service=vitemapompe
+      - traefik.http.routers.vitemapompe-wa.tls=true
+      - traefik.http.routers.vitemapompe-wa.tls.certresolver=myresolver
+
+  ors:
+    image: openrouteservice/openrouteservice:latest
+    container_name: ors
+    volumes:
+     - ors-graphs:/ors-core/data/graphs
+     - ors-elevation-cache:/ors-core/data/elevation_cache
+     - ors-logs:/var/log/ors
+     - ors-tomcat-logs:/usr/local/tomcat/logs
+     - ors-conf:/ors-conf
+    environment:
+     - BUILD_GRAPHS=false
+     - JAVA_OPTS=-Djava.awt.headless=true -server -XX:TargetSurvivorRatio=75 -XX:SurvivorRatio=64 -XX:MaxTenuringThreshold=3 -XX:+UseG1GC -XX:+ScavengeBeforeFullGC -XX:ParallelGCThreads=4 -Xms1g -Xmx2g
+     - CATALINA_OPTS=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9001 -Dcom.sun.management.jmxremote.rmi.port=9001 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost
+
+networks:
+  gateway:
+  vitemapompe:
+
+volumes:
+  postgres:
+  certificates-traefik:
+  ors-graphs:
+  ors-elevation-cache:
+  ors-logs:
+  ors-tomcat-logs:
+  ors-conf:
