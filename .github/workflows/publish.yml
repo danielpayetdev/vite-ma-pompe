@@ -51,6 +51,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./server
-          file: {context}/Dockerfile-cron
+          file: "{context}}/Dockerfile-cron"
           push: true
           tags: ${{ steps.meta-cron.outputs.tags }}
