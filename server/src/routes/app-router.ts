@@ -10,5 +10,7 @@ export class AppRouter {
 
   public initialiserRoute(app: Hono) {
     app.route("/stations", this.stationRouter.getRoutes());
+    app.get("/health", (c) => c.json({ status: "OK" }));
+    app.get("/about", (c) => c.json({ version: Deno.env.get("VERSION") }));
   }
 }

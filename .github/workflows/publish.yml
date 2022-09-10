@@ -31,12 +31,18 @@ jobs:
           tags: |
             type=semver,pattern={{version}}
 
+      - uses: olegtarasov/get-tag@v2.1
+        id: tagName
+        with:
+          tagRegex: "v(.*)"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
           context: ./server
           push: true
           tags: ${{ steps.meta-server.outputs.tags }}
+          build-args: VERSION=${{ steps.tagName.outputs.tag }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta-cron
