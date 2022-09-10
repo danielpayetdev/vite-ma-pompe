@@ -52,8 +52,7 @@ services:
       - POSTGRES_PASSWORD
       - POSTGRES_DB
   backend: 
-    # image: ghcr.io/danielpayetdev/vite-ma-pompe-server:latest
-    image: vmp
+    image: ghcr.io/danielpayetdev/vite-ma-pompe-server:latest
     container_name: backend-vite-ma-pompe
     restart: unless-stopped
     networks:
@@ -77,8 +76,7 @@ services:
       - traefik.http.routers.vitemapompe-wa.tls=true
       - traefik.http.routers.vitemapompe-wa.tls.certresolver=myresolver
   cron: 
-    # image: ghcr.io/danielpayetdev/vite-ma-pompe-cron:latest
-    image: cron
+    image: ghcr.io/danielpayetdev/vite-ma-pompe-cron:latest
     container_name: cron-vite-ma-pompe
     restart: unless-stopped
     networks:
