@@ -1,4 +1,4 @@
-import { bootstrap, Bootstrapped, config, Hono, serve } from "./deps.ts";
+import { bootstrap, Bootstrapped, config, Hono, serve, cors } from "./deps.ts";
 import { AppRouter } from "./routes/app-router.ts";
 
 /**
@@ -10,6 +10,7 @@ export class Main {
 
   constructor(public router: AppRouter) {
     this.app = new Hono();
+    this.app.use(cors());
     this.router.initialiserRoute(this.app);
   }
 

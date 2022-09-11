@@ -1,5 +1,6 @@
 export { serve } from "https://deno.land/std@0.150.0/http/server.ts";
-export { Hono } from "https://deno.land/x/hono@v2.0.8/mod.ts";
+export { Hono } from "https://deno.land/x/hono@v2.1.4/mod.ts";
+export { cors } from "https://deno.land/x/hono@v2.1.4/middleware.ts"
 export type { Context } from "https://deno.land/x/hono@v2.0.6/mod.ts";
 export { join } from "https://deno.land/std@0.73.0/path/mod.ts";
 export { default as os } from "https://deno.land/x/dos@v0.1.0/mod.ts";
