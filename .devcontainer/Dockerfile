@@ -12,6 +12,26 @@ ENV PATH=${DENO_INSTALL}/bin:${PATH} \
 
 RUN curl -sL https://appwrite.io/cli/install.sh | bash
 
+ENV CHROME_EXECUTABLE=chromium
+
+ENV PUB_CACHE=/home/vscode/.pub-cache
+
+ENV FLUTTER_HOME=/home/vscode/sdks/flutter \
+    FLUTTER_VERSION=3.0.5
+ENV FLUTTER_ROOT=$FLUTTER_HOME
+
+ENV PATH ${PATH}:${FLUTTER_HOME}/bin:${FLUTTER_HOME}/bin/cache/dart-sdk/bin
+
+RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME}
+
+RUN flutter config --enable-web \
+    && sudo apt-get update \
+    && sudo apt-get install -y chromium \
+    && sudo rm -rf /var/lib/apt/lists/* \
+    && flutter doctor \
+    && chown -R vscode:vscode ${FLUTTER_HOME} \
+    && chown -R vscode:vscode ${PUB_CACHE}
+
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #    && apt-get -y install --no-install-recommends <your-package-list-here>
